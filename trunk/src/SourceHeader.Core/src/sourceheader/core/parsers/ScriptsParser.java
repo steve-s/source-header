@@ -5,20 +5,21 @@
 
 package sourceheader.core.parsers;
 
-import java.util.*;
+import java.util.Arrays;
 
 /**
  *
  * @author steve
  */
-public class CppParser extends AbstractParser {
+public class ScriptsParser extends AbstractParser {
 
     @Override
     protected Iterable<Block> getCommentBlocks() {
         return Arrays.asList(
-            new Block[] { 
+            new Block[] {
                 new Block("/*", "*/"),
-                new Block("//", "\n")
+                new Block("//", "\n"),
+                new Block("#", "\n")
             }
         );
     }
@@ -26,8 +27,8 @@ public class CppParser extends AbstractParser {
     @Override
     public String[] getExtensions() {
         return new String[] {
-            "cpp", "hpp",
-            "h", "c",
-            "java", "cs" };
+            "sh", "bash",
+            "js",
+            "php", "php4", "php5", "php6", "php3"};
     }
 }

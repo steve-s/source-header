@@ -7,6 +7,7 @@ package sourceheader.core;
 
 import java.io.IOException;
 import java.util.*;
+import sourceheader.core.HeaderParser.SyntaxErrorException;
 import sourceheader.core.parsers.*;
 
 /**
@@ -53,7 +54,8 @@ public class FileHeaderFactory {
      * @param path Path on filesystem to file.
      * @return instance of @link sourceheader.core#FileHeader FileHeader class.
      */
-    public FileHeader create(Path path) throws IOException {
+    public FileHeader create(Path path)
+            throws IOException, SyntaxErrorException {
         // find correct parser
         HeaderParser parser = this.findParserFor(path);
 

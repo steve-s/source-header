@@ -5,7 +5,11 @@
 
 package sourceheader.core;
 
+import java.io.IOException;
 import java.util.*;
+import sourceheader.core.*;
+import sourceheader.core.Folder;
+import sourceheader.core.HeaderParser.SyntaxErrorException;
 
 /**
  *
@@ -19,19 +23,22 @@ public class FilesTreeFactory {
         this.headerFactory = headerFactory;
     }
 
-    public FilesTree create(Path path) {
+    public FilesTree create(Path path)
+            throws IOException, SyntaxErrorException {
         FoldersAndFiles data = this.extractFolder(path);
         return new FilesTree(path, data.files, data.folders, this.headerFactory);
     }
 
-    private FoldersAndFiles extractFolder(Path path) {
+    private FoldersAndFiles extractFolder(Path path)
+            throws IOException, SyntaxErrorException {
         FoldersAndFiles result = new FoldersAndFiles();
 
         for(Path child : path.getChildren()) {
-            if (path.isDirectory()) {
-                result.folders.add(this.createFolder(child));
+            if (child.isDirectory()) {
+                Folder folder = this.createFolder(child);
+                result.folders.add(folder);
             }
-            else if (path.isFile()) {
+            else if (child.isFile()) {
                 result.files.add(this.createFile(child));
             }
         }
@@ -39,12 +46,14 @@ public class FilesTreeFactory {
         return result;
     }
 
-    private Folder createFolder(Path path) {
+    private Folder createFolder(Path path) 
+            throws IOException, SyntaxErrorException {
         FoldersAndFiles data = this.extractFolder(path);
         return new Folder(path, data.files, data.folders);
     }
 
-    private File createFile(Path path) {
+    private File createFile(Path path)
+            throws IOException, SyntaxErrorException {
         return new File(path, this.headerFactory.create(path));
     }
 

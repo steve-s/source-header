@@ -21,48 +21,124 @@ public abstract class AbstractParser implements HeaderParser {
     public AbstractParser() {
     }
 
-    public FileHeader parse(Path path, FileHeaderFactory headerFactory) throws IOException {
-        return this.parse(new FileReader(path), headerFactory);
+    public FileHeader parse(Path path, FileHeaderFactory headerFactory) 
+            throws IOException, SyntaxErrorException {
+        try {
+            return this.parse(new FileReader(path), headerFactory);
+        }
+        catch(SyntaxErrorException ex) {
+            throw new SyntaxErrorException(path.getAbsolutePath());
+        }
     }
 
-    public FileHeader parse(Reader reader, FileHeaderFactory headerFactory) throws IOException {
-
-        // constant list of sequences of starts of blocks.
-        final Vector<SearchSequence> allStarts = new Vector<SearchSequence>();
-        for(Block block : this.getCommentBlocks()) {
-            allStarts.add(new SearchSequence(
-                    block,
-                    block.getStartSequence()));
-        }
-
+    public FileHeader parse(Reader reader, FileHeaderFactory headerFactory)
+            throws IOException, SyntaxErrorException {
         StringBuilder result = new StringBuilder(); // the new header content.
         boolean wasComment = false; // indicates whether first comment was found.
         char c = ' '; // current character read from file.
 
         while (reader.ready()) {
 
-            // skip whitespaces
-            boolean firstNewline = false;
             StringBuilder whitespace = new StringBuilder();
-            if (wasComment) {
-                //so this is at least second iteration
-                //and there is something in c that was not parsed
-                whitespace.append(c);
-                // if it is not whitespace, than it will be cut off
-                // after following loop, see comment "last char is not white".
+            c = this.skipWitespace(reader, c, whitespace, wasComment, !wasComment);
+
+            if (c == ' ') {
+                return headerFactory.create(result.toString());
             }
+
+            // check for comment start
+            CharAndBlock readResult = this.readTillStartOfComment(reader, c);
+            c = readResult.c;
+            Block comment = readResult.block;
+
+            if (comment == null) {  // this covers even end of file
+                // no comment starts here, we are done.
+                return headerFactory.create(result.toString());
+            }
+
+            // we have start of commet in found variable.
+            result.append(whitespace);
+            result.append(comment.getStartSequence());
+
+            // read characters till the end of comment
+            StringBuilder commentContent = new StringBuilder();
+            c = this.readTillEndOfComment(reader, c, comment, commentContent);
+
+            result.append(commentContent);
+            wasComment = true;
+        }
+
+        return headerFactory.create(result.toString());
+    }
+
+    private char skipWitespace(
+            Reader reader,
+            char previousInput,
+            StringBuilder whitespace,
+            boolean checkForDoubleNewlines,
+            boolean ignorePreviousOutput) throws IOException {
+
+            // last character from whitespace is anyway removed so
+            // we dont have to check, if previousInput is white
+            if (!ignorePreviousOutput) {
+                whitespace.append(previousInput);
+            }
+
+            // char variable for reading the file
+            char c = previousInput;                
+
+            // indicates whether the character before was \n
+            boolean firstNewline = false;   
+
+            // read till end or till c is white
             while (reader.ready() && Character.isWhitespace(c)) {
                 c = (char)reader.read();
                 whitespace.append(c);
-                if (wasComment && c == '\n' && firstNewline) {
-                    return headerFactory.create(result.toString());
+                if (checkForDoubleNewlines && c == '\n' && firstNewline) {
+                    // returned character cant be whitespace
+                    // because of semantic function of this method
+                    // so ' ' may indicate special state
+                    return ' ';
                 }
                 firstNewline = c == '\n';
             }
             whitespace.setLength(whitespace.length()-1); // last char is not white
 
-            // check for comment start
-            Vector<SearchSequence> starts = new Vector<SearchSequence>(allStarts);
+            return c;
+    }
+
+    private char readTillEndOfComment(
+            Reader reader,
+            char previousInput,
+            Block comment,
+            StringBuilder commentContent)
+            throws IOException, SyntaxErrorException {
+
+        char c = previousInput;
+        SearchSequence search = new SearchSequence(null, comment.getEndSequence());        
+        while (reader.ready() && !search.found()) {
+            search.next(c);
+            commentContent.append(c);
+            c = (char) reader.read();
+        }
+
+        if (!reader.ready()) {
+            search.next(c);
+            if (!search.found()) {
+                throw new SyntaxErrorException();
+            }
+            commentContent.append(c);
+        }
+
+        return c;
+    }
+
+    private CharAndBlock readTillStartOfComment(
+            Reader reader,
+            char previousInput) throws IOException {
+
+            char c = previousInput;
+            List<SearchSequence> starts = this.getAllStartSequences();
             Block found = null;
             while (starts.size() > 0 && found == null && reader.ready()) {
                 Vector<SearchSequence> toBeRemoved = new Vector<SearchSequence>();
@@ -80,29 +156,25 @@ public abstract class AbstractParser implements HeaderParser {
                 c = (char)reader.read();
             }
 
-            if (found == null) {
-                // no comment starts here, we are done.
-                return headerFactory.create(result.toString());
-            }
+            CharAndBlock result = new CharAndBlock();
+            result.block = found;
+            result.c = c;
+            return result;
+    }
 
-            // we have start of commet in found variable.
-            result.append(whitespace);
-            result.append(found.getStartSequence());
+    private class CharAndBlock {
+        public char c;
+        public Block block;
+    }
 
-            // read characters till the end of comment
-            SearchSequence search = new SearchSequence(null, found.getEndSequence());
-            StringBuilder commentContent = new StringBuilder();
-            while (reader.ready() && !search.found()) {
-                search.next(c);
-                commentContent.append(c);
-                c = (char) reader.read();
-            }
-
-            result.append(commentContent);
-            wasComment = true;
+    private List<SearchSequence> getAllStartSequences() {        
+        final Vector<SearchSequence> result = new Vector<SearchSequence>();
+        for(Block block : this.getCommentBlocks()) {
+            result.add(new SearchSequence(
+                    block,
+                    block.getStartSequence()));
         }
-
-        return headerFactory.create(result.toString());
+        return result;
     }
 
     private class SearchSequence {

@@ -48,7 +48,7 @@ public class Path extends java.io.File {
     public Iterable<Path> getChildren() {
         List<Path> result = new Vector<Path>();
         for (String path : this.list()) {
-            result.add(new Path(path));
+            result.add(new Path(this.getAbsolutePath(), path));
         }
         
         return (Iterable<Path>)result;

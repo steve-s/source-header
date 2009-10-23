@@ -9,8 +9,8 @@ import java.io.IOException;
 import java.io.Reader;
 import org.junit.Test;
 import sourceheader.core.*;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 import static org.junit.Assert.*;
+import sourceheader.core.HeaderParser.SyntaxErrorException;
 
 /**
  *
@@ -22,7 +22,7 @@ public class FileHeaderFactoryTest {
      * Tests the creation of header by factory.
      */
     @Test
-    public void test_create() throws IOException, IOException {
+    public void test_create() throws IOException, IOException, SyntaxErrorException {
         final String extension = "asdsda";
 
         // create the factory with stub parser that parses nothing
@@ -36,7 +36,7 @@ public class FileHeaderFactoryTest {
 
                         public FileHeader parse(Reader reader, FileHeaderFactory factory)
                                 throws IOException {
-                            throw new NotImplementedException();
+                            throw new UnsupportedOperationException("Not supported yet.");
                         }
 
                         public String[] getExtensions() {

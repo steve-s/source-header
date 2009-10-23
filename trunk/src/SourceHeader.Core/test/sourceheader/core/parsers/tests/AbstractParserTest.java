@@ -10,6 +10,7 @@ import java.io.Reader;
 import java.util.Arrays;
 import org.junit.Test;
 import sourceheader.core.*;
+import sourceheader.core.HeaderParser.SyntaxErrorException;
 import sourceheader.core.parsers.*;
 import static org.junit.Assert.*;
 
@@ -21,18 +22,8 @@ public class AbstractParserTest {
     
     @Test
     public void test_parser_when_header_is_finished_by_couple_new_lines()
-            throws IOException {
-        AbstractParser parser = new AbstractParser() {
-            @Override
-            protected Iterable<Block> getCommentBlocks() {
-                return Arrays.asList(new Block[]{new Block("/*", "*/")});
-            }
-
-            @Override
-            public String[] getExtensions() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        };
+            throws IOException, SyntaxErrorException {
+        AbstractParser parser = this.getParserWithStubCommentBlock("/*", "*/");
         
         // create the factory stub
         FileHeaderFactory factory =
@@ -50,18 +41,8 @@ public class AbstractParserTest {
     }
 
     @Test
-    public void test_parse_when_header_is_finished_by_non_comment_text() throws IOException {
-        AbstractParser parser = new AbstractParser() {
-            @Override
-            protected Iterable<Block> getCommentBlocks() {
-                return Arrays.asList(new Block[]{new Block("/*", "*/")});
-            }
-
-            @Override
-            public String[] getExtensions() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        };
+    public void test_parse_when_header_is_finished_by_non_comment_text() throws IOException, SyntaxErrorException {
+        AbstractParser parser = this.getParserWithStubCommentBlock("/*", "*/");
 
         // create the factory stub
         FileHeaderFactory factory =
@@ -75,5 +56,95 @@ public class AbstractParserTest {
 
         assertEquals("\n/*This is another\n *\n *header\n */",
                 header.getContent());
+    }
+
+    @Test
+    public void test_parse_oneline_cstyle_comment_header() throws IOException, SyntaxErrorException {
+        AbstractParser parser = this.getParserWithStubCommentBlock("//", "\n");
+
+        // create the factory stub
+        FileHeaderFactory factory =
+                new FileHeaderFactory(new HeaderParser[] {});
+
+        Reader reader =
+                new StringReader(
+                "// This is \n // header constructed \n " +
+                "// with one line comments \n int global_speed = 8; \n");
+
+        FileHeader header = parser.parse(reader, factory);
+
+        assertEquals("// This is \n // header constructed \n " +
+                "// with one line comments \n",
+                header.getContent());
+    }
+
+    @Test
+    public void test_parse_when_there_is_only_header_in_the_file()
+            throws IOException, SyntaxErrorException {
+        AbstractParser parser = this.getParserWithStubCommentBlock("/*", "*/");
+
+        // create the factory stub
+        FileHeaderFactory factory =
+                new FileHeaderFactory(new HeaderParser[] {});
+
+        final String headerStr = "/* This is \n * header constructed \n " +
+                               "* with star comments \n */";
+        Reader reader = new StringReader(headerStr);
+
+        FileHeader header = parser.parse(reader, factory);
+
+        assertEquals(headerStr, header.getContent());
+    }
+
+    @Test
+    public void test_parse_throw_when_header_has_syntax_error()
+            throws IOException {
+
+        AbstractParser parser = this.getParserWithStubCommentBlock("/*", "*/");
+
+        // create the factory stub
+        FileHeaderFactory factory =
+                new FileHeaderFactory(new HeaderParser[] {});
+
+        final String headerStr = "/* This is \n * header with \n " +
+                                  "* syntax error \n no end of comment here ";
+        Reader reader = new StringReader(headerStr) {
+            private int i = 0;
+
+            @Override
+            public boolean ready() {
+                return i<headerStr.length();
+                // StringReader.ready does not work correctly? strange.
+            }
+
+            @Override
+            public int read() throws IOException {
+                this.i++;
+                return super.read();
+            }
+        };
+
+        try {
+            FileHeader header = parser.parse(reader, factory);
+            fail("SyntaxErrorException was not thrown.");
+        }
+        catch (SyntaxErrorException exception) {
+        }
+    }
+
+    private AbstractParser getParserWithStubCommentBlock(
+            final String start,
+            final String end) {
+        return new AbstractParser() {
+            @Override
+            protected Iterable<Block> getCommentBlocks() {
+                return Arrays.asList(new Block[]{new Block(start, end)});
+            }
+
+            @Override
+            public String[] getExtensions() {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        };
     }
 }

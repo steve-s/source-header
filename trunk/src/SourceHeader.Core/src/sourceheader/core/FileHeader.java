@@ -20,6 +20,10 @@ public class FileHeader {
         this.content = content;
     }
 
+    public FileHeader(FileHeader header) {
+        this.content = header.content;
+    }
+
     public String getContent() {
         return this.content;
     }
