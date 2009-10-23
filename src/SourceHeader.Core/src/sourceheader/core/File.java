@@ -27,7 +27,7 @@ public class File {
     protected File(Path path, FileHeader header) {
         this.path = path;
         this.header = header;
-        this.lastHeader = header;
+        this.lastHeader = new FileHeader(header);
     }
 
     public Path getPath() {
@@ -72,7 +72,7 @@ public class File {
             this.getBackupFilePath().delete();
         }
 
-        this.lastHeader = this.header;
+        this.lastHeader = new FileHeader(this.header);
     }
 
     /**
