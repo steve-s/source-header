@@ -117,8 +117,7 @@ public class File {
      */
     private void replaceWithTmpFile() throws IOException {
         try {
-            this.getPath().delete();
-            Filesystem.copyText(this.getTmpFilePath(),this.getPath());
+            Filesystem.copyText(this.getTmpFilePath(),this.getPath(), 0, false);
         }
         catch(IOException exception) {
             try {
