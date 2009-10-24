@@ -13,6 +13,10 @@ import java.util.*;
  */
 public class CppParser extends AbstractParser {
 
+    public CppParser(ParsersConfig config) {
+        super(config);
+    }
+
     @Override
     protected Iterable<Block> getCommentBlocks() {
         return Arrays.asList(

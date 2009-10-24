@@ -13,6 +13,10 @@ import java.util.Arrays;
  */
 public class ScriptsParser extends AbstractParser {
 
+    public ScriptsParser(ParsersConfig config) {
+        super(config);
+    }
+
     @Override
     protected Iterable<Block> getCommentBlocks() {
         return Arrays.asList(

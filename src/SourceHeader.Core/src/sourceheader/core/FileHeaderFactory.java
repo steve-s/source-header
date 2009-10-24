@@ -18,14 +18,17 @@ public class FileHeaderFactory {
     
     private List<HeaderParser> parsers;
     private Map<String, FileHeader> headers = new HashMap<String, FileHeader>();
+    private ParsersConfig config;
 
-    public FileHeaderFactory() {
+    public FileHeaderFactory(ParsersConfig config) {
+        this.config = config;
         this.parsers = new Vector<HeaderParser>();
 
-        this.parsers.add(new CppParser());
+        this.parsers.add(new CppParser(config));
     }
 
-    public FileHeaderFactory(HeaderParser[] parsers) {
+    public FileHeaderFactory(ParsersConfig config, HeaderParser[] parsers) {
+        this.config = config;
         this.parsers = new Vector<HeaderParser>(Arrays.asList(parsers));
     }
 
@@ -34,7 +37,7 @@ public class FileHeaderFactory {
     }
 
     public FileHeader create(String content) {
-        FileHeader result = new FileHeader(content);
+        FileHeader result = new FileHeader(content, this.config.getSpecialCharacter());
         FileHeader cached = this.headers.get(result.getHash());
 
         if (cached != null) {

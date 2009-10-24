@@ -7,7 +7,9 @@ package sourceheader.core.parsers;
 
 import java.io.*;
 import java.util.*;
+import java.util.Hashtable;
 import sourceheader.core.*;
+import sourceheader.core.parsers.Block;
 
 /**
  *
@@ -18,7 +20,10 @@ public abstract class AbstractParser implements HeaderParser {
     protected abstract Iterable<Block> getCommentBlocks();
     public abstract String[] getExtensions();
 
-    public AbstractParser() {
+    private ParsersConfig config;
+
+    public AbstractParser(ParsersConfig config) {
+        this.config = config;
     }
 
     public FileHeader parse(Path path, FileHeaderFactory headerFactory) 
@@ -113,12 +118,52 @@ public abstract class AbstractParser implements HeaderParser {
             Block comment,
             StringBuilder commentContent)
             throws IOException, SyntaxErrorException {
+        
+        List<SearchSequence> alternatingParts =
+                this.getAlternatingPartsSearchSequences();
+        Dictionary<Block, Integer> alternatingPartIndexes =
+                new Hashtable<Block, Integer>();
+        SearchSequence currentAlternatingPart = null;
 
         char c = previousInput;
         SearchSequence search = new SearchSequence(null, comment.getEndSequence());        
         while (reader.ready() && !search.found()) {
-            search.next(c);
-            commentContent.append(c);
+
+            if (currentAlternatingPart != null) {
+                if (currentAlternatingPart.next(c)) {
+                    Block block = (Block) currentAlternatingPart.getData();
+                    String name = this.config.getAlternatingPartName(block);
+                    commentContent.append(this.config.getSpecialCharacter());
+                    commentContent.append(name);
+                    commentContent.append(this.config.getSpecialCharacter());
+                    commentContent.append(alternatingPartIndexes.get(block).toString());
+                    commentContent.append(this.config.getSpecialCharacter());
+                    commentContent.append(
+                            ((Block)currentAlternatingPart.getData()).getEndSequence());
+                    currentAlternatingPart = null;
+                }
+            }
+            else {
+                for (SearchSequence sequence : alternatingParts) {
+                    if (sequence.next(c)) {
+                        sequence.reset();
+                        currentAlternatingPart = 
+                                new SearchSequence(
+                                    sequence.getData(),
+                                    ((Block)sequence.getData()).getEndSequence());
+                        Integer i = alternatingPartIndexes.get((Block)sequence.getData());
+                        if (i == null) {
+                            i = new Integer(-1);
+                        }
+                        i++;
+                        alternatingPartIndexes.put((Block)sequence.getData(), i);
+                    }
+                }
+
+                commentContent.append(c);
+            }
+
+            search.next(c);            
             c = (char) reader.read();
         }
 
@@ -133,6 +178,18 @@ public abstract class AbstractParser implements HeaderParser {
         }
 
         return c;
+    }
+
+    private List<SearchSequence> getAlternatingPartsSearchSequences() {
+        List<SearchSequence> result =
+                new Vector<SearchSequence>();
+
+        for (String name : this.config.getAlternatingParts().keySet()) {
+            Block block = this.config.getAlternatingParts().get(name);
+            result.add(new SearchSequence(block, block.getStartSequence()));
+        }
+
+        return result;
     }
 
     private CharAndBlock readTillStartOfComment(
@@ -200,6 +257,10 @@ public abstract class AbstractParser implements HeaderParser {
         private char nextCharacter() {
             int index = this.current.length();
             return this.sequence.charAt(index);
+        }
+
+        public void reset() {
+            this.current.setLength(0);
         }
 
         public boolean found() {

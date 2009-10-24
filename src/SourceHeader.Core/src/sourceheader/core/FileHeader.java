@@ -5,6 +5,10 @@
 
 package sourceheader.core;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 import sourceheader.core.util.MD5;
 
 /**
@@ -14,10 +18,23 @@ import sourceheader.core.util.MD5;
 public class FileHeader {
 
     private String content;
+    private Map<String, List<String>> alernatingBlocks;
     private int hashCodeCache = -1;
+    private char specialCharacter;
 
-    protected FileHeader(String content) {
+    protected FileHeader(String content, char specialCharacter) {
+        this.specialCharacter = specialCharacter;
         this.content = content;
+        this.alernatingBlocks = new HashMap<String, List<String>>();
+    }
+
+    protected FileHeader(
+            String content,
+            char specialCharacter,
+            Map<String, List<String>> alernatingBlocks) {
+        this.specialCharacter = specialCharacter;
+        this.content = content;
+        this.alernatingBlocks = alernatingBlocks;
     }
 
     public FileHeader(FileHeader header) {
@@ -26,6 +43,34 @@ public class FileHeader {
 
     public String getContent() {
         return this.content;
+    }
+
+    public String getRawContent() {
+        StringBuilder result = new StringBuilder();
+
+        StringTokenizer tokenizer =
+                new StringTokenizer(
+                    this.content,
+                    Character.toString(this.specialCharacter),
+                    false);
+
+        while (tokenizer.hasMoreTokens()) {
+            result.append(tokenizer.nextToken());
+
+            if (tokenizer.hasMoreTokens()) {
+                String name = tokenizer.nextToken();
+                assert tokenizer.hasMoreTokens() : "There must be number after id";
+                int number = Integer.parseInt(tokenizer.nextToken());
+
+                result.append(this.alernatingBlocks.get(name).get(number));
+            }
+        }
+
+        return result.toString();
+    }
+
+    public Map<String, List<String>> getAlernatingParts() {
+        return alernatingBlocks;
     }
 
     public void setContent(String content) {
