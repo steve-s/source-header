@@ -8,10 +8,6 @@ package sourceheader.core.tests;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Reader;
-import java.util.Iterator;
-import java.util.Iterator;
-import junit.framework.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -64,14 +60,8 @@ public class FilesTreeFactoryTest {
 
     @Test
     public void tets_change_the_tree() throws IOException, SyntaxErrorException {
-        FileHeaderFactory headersFactory =
-                new FileHeaderFactory(
-                    new HeaderParser[] {
-                        new CppParser(),
-                        new ScriptsParser()
-                    });
         FilesTreeFactory factory =
-                new FilesTreeFactory(headersFactory);
+                new FilesTreeFactory(this.getHeaderFactory());
 
         FilesTree tree = factory.create(this.getTestDirPath());
 
@@ -83,24 +73,19 @@ public class FilesTreeFactoryTest {
 
         tree.update();
 
+        FileHeaderFactory headersFactory = this.getHeaderFactory();
         FileHeader header1 = headersFactory.create(this.getCppFilePath());
         FileHeader header2 = headersFactory.create(this.getHppFilePath());
 
-        assertEquals("// New header man ", header1.getContent());
+        assertEquals("// New header man \n", header1.getContent());
         assertEquals(header1.getContent(), header2.getContent());
     }
 
 
     @Test
     public void test_parse_the_tree() throws IOException, SyntaxErrorException {
-        FileHeaderFactory headersFactory =
-                new FileHeaderFactory(
-                    new HeaderParser[] {
-                        new CppParser(),
-                        new ScriptsParser()
-                    });
         FilesTreeFactory factory =
-                new FilesTreeFactory(headersFactory);
+                new FilesTreeFactory(this.getHeaderFactory());
 
         FilesTree tree = factory.create(this.getTestDirPath());
 
@@ -166,5 +151,13 @@ public class FilesTreeFactoryTest {
         int count = 0;
         for(Object o:iterable) { count++; }
         return count;
+    }
+
+    private FileHeaderFactory getHeaderFactory() {
+        return new FileHeaderFactory(
+                    new HeaderParser[] {
+                        new CppParser(),
+                        new ScriptsParser()
+                  });
     }
 }

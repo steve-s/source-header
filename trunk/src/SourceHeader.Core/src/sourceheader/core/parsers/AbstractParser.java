@@ -122,7 +122,9 @@ public abstract class AbstractParser implements HeaderParser {
             c = (char) reader.read();
         }
 
-        if (!reader.ready()) {
+        if (!reader.ready() && !search.found()) {
+            // the file is at the end, but the last characted may
+            // be last character of searched sequence...
             search.next(c);
             if (!search.found()) {
                 throw new SyntaxErrorException();

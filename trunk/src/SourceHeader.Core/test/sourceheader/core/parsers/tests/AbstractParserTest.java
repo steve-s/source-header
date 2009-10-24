@@ -23,7 +23,7 @@ public class AbstractParserTest {
     @Test
     public void test_parser_when_header_is_finished_by_couple_new_lines()
             throws IOException, SyntaxErrorException {
-        AbstractParser parser = this.getParserWithStubCommentBlock("/*", "*/");
+        AbstractParser parser = Utils.getParserWithStubCommentBlock("/*", "*/");
         
         // create the factory stub
         FileHeaderFactory factory =
@@ -42,7 +42,7 @@ public class AbstractParserTest {
 
     @Test
     public void test_parse_when_header_is_finished_by_non_comment_text() throws IOException, SyntaxErrorException {
-        AbstractParser parser = this.getParserWithStubCommentBlock("/*", "*/");
+        AbstractParser parser = Utils.getParserWithStubCommentBlock("/*", "*/");
 
         // create the factory stub
         FileHeaderFactory factory =
@@ -60,7 +60,7 @@ public class AbstractParserTest {
 
     @Test
     public void test_parse_oneline_cstyle_comment_header() throws IOException, SyntaxErrorException {
-        AbstractParser parser = this.getParserWithStubCommentBlock("//", "\n");
+        AbstractParser parser = Utils.getParserWithStubCommentBlock("//", "\n");
 
         // create the factory stub
         FileHeaderFactory factory =
@@ -81,7 +81,7 @@ public class AbstractParserTest {
     @Test
     public void test_parse_when_there_is_only_header_in_the_file()
             throws IOException, SyntaxErrorException {
-        AbstractParser parser = this.getParserWithStubCommentBlock("/*", "*/");
+        AbstractParser parser = Utils.getParserWithStubCommentBlock("/*", "*/");
 
         // create the factory stub
         FileHeaderFactory factory =
@@ -100,7 +100,7 @@ public class AbstractParserTest {
     public void test_parse_throw_when_header_has_syntax_error()
             throws IOException {
 
-        AbstractParser parser = this.getParserWithStubCommentBlock("/*", "*/");
+        AbstractParser parser = Utils.getParserWithStubCommentBlock("/*", "*/");
 
         // create the factory stub
         FileHeaderFactory factory =
@@ -108,21 +108,7 @@ public class AbstractParserTest {
 
         final String headerStr = "/* This is \n * header with \n " +
                                   "* syntax error \n no end of comment here ";
-        Reader reader = new StringReader(headerStr) {
-            private int i = 0;
-
-            @Override
-            public boolean ready() {
-                return i<headerStr.length();
-                // StringReader.ready does not work correctly? strange.
-            }
-
-            @Override
-            public int read() throws IOException {
-                this.i++;
-                return super.read();
-            }
-        };
+        Reader reader = Utils.getStringReader(headerStr);
 
         try {
             FileHeader header = parser.parse(reader, factory);
@@ -132,19 +118,19 @@ public class AbstractParserTest {
         }
     }
 
-    private AbstractParser getParserWithStubCommentBlock(
-            final String start,
-            final String end) {
-        return new AbstractParser() {
-            @Override
-            protected Iterable<Block> getCommentBlocks() {
-                return Arrays.asList(new Block[]{new Block(start, end)});
-            }
+    @Test
+    public void test_parse_when_one_line_comment_is_followed_by_two_newlines()
+            throws IOException, SyntaxErrorException {
+        AbstractParser parser = Utils.getParserWithStubCommentBlock("//", "\n");
 
-            @Override
-            public String[] getExtensions() {
-                throw new UnsupportedOperationException("Not supported yet.");
-            }
-        };
+        // create the factory stub
+        FileHeaderFactory factory =
+                new FileHeaderFactory(new HeaderParser[] {});
+
+        Reader reader = Utils.getStringReader("// One line \n\n");
+
+        FileHeader header = parser.parse(reader, factory);
+
+        assertEquals("// One line \n", header.getContent());
     }
 }
