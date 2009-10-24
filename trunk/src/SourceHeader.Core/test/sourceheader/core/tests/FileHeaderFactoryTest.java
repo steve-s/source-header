@@ -27,11 +27,12 @@ public class FileHeaderFactoryTest {
 
         // create the factory with stub parser that parses nothing
         FileHeaderFactory factory = new FileHeaderFactory(
+                Utils.getParsersConfig(),
                 new HeaderParser[] {
                     new HeaderParser() {
                         public FileHeader parse(Path path, FileHeaderFactory factory)
                                 throws IOException {
-                            return new FileHeader(path.getExtension()) {};
+                            return new FileHeader(path.getExtension(), '%') {};
                         }
 
                         public FileHeader parse(Reader reader, FileHeaderFactory factory)
@@ -64,7 +65,9 @@ public class FileHeaderFactoryTest {
     public void test_caching() throws IOException {
         // create the factory stub
         FileHeaderFactory factory =
-                new FileHeaderFactory(new HeaderParser[] {});
+                new FileHeaderFactory(
+                    Utils.getParsersConfig(),
+                    new HeaderParser[] {});
 
         // gets 2 headers from factory, passing the same content
         FileHeader header1 = factory.create("constant");

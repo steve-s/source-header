@@ -10,16 +10,17 @@ import java.io.StringReader;
 import java.util.Arrays;
 import sourceheader.core.parsers.AbstractParser;
 import sourceheader.core.parsers.Block;
+import sourceheader.core.tests.Utils;
 
 /**
  *
  * @author steve
  */
-class Utils {
+class AbstractParserUtils {
     public static AbstractParser getParserWithStubCommentBlock(
             final String start,
             final String end) {
-        return new AbstractParser() {
+        return new AbstractParser(Utils.getParsersConfig()) {
             @Override
             protected Iterable<Block> getCommentBlocks() {
                 return Arrays.asList(new Block[]{new Block(start, end)});

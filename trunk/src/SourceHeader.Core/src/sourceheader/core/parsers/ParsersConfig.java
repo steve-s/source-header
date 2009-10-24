@@ -13,14 +13,43 @@ import java.util.*;
  */
 public class ParsersConfig {
 
-    private static List<Block> alternatingParts =
-            new Vector<Block>();
+    private char specialCharacter;
 
-    public static void addAlternatingBlock(Block block) {
-        alternatingParts.add(block);
+    private Map<String, Block> alternatingParts;
+
+    public ParsersConfig(char specialCharacter, Map<String, Block> alternatingParts) {
+        this.specialCharacter = specialCharacter;
+        this.alternatingParts = alternatingParts;
     }
 
-    public static void removeAlternatingBlock(Block block) {
-        alternatingParts.remove(block);
+    public ParsersConfig(char specialCharacter) {
+        this.specialCharacter = specialCharacter;
+        this.alternatingParts = new HashMap<String, Block>();
+    }
+
+    public char getSpecialCharacter() {
+        return this.specialCharacter;
+    }
+
+    public Map<String, Block> getAlternatingParts() {
+        return this.alternatingParts;
+    }
+
+    public Block getAlternatingPart(String name) {
+        return this.alternatingParts.get(name);
+    }
+
+    public String getAlternatingPartName(Block block) {
+        for(String key : this.alternatingParts.keySet()) {
+            if (this.alternatingParts.get(key).equals(block)) {
+                return key;
+            }
+        }
+        
+        return null;
+    }
+
+    public static ParsersConfig getDefault() {
+        return new ParsersConfig('%');
     }
 }

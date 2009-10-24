@@ -155,9 +155,10 @@ public class FilesTreeFactoryTest {
 
     private FileHeaderFactory getHeaderFactory() {
         return new FileHeaderFactory(
+                    Utils.getParsersConfig(),
                     new HeaderParser[] {
-                        new CppParser(),
-                        new ScriptsParser()
+                        new CppParser(Utils.getParsersConfig()),
+                        new ScriptsParser(Utils.getParsersConfig())
                   });
     }
 }

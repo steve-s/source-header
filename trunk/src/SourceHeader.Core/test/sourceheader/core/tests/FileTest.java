@@ -56,8 +56,10 @@ public class FileTest {
             FileNotFoundException,
             IOException {
         
-        FileHeader newHeader = new FileHeader("/* two lines \n header */") {};
-        FileHeader oldHeader = new FileHeader("/* This is one line header */") {};
+        FileHeader newHeader =
+                new FileHeader("/* two lines \n header */", '%') {};
+        FileHeader oldHeader =
+                new FileHeader("/* This is one line header */", '%') {};
         File file = new File(this.getFilePath(), oldHeader) {};
 
         file.setHeader(newHeader);
