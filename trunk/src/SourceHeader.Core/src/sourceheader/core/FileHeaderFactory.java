@@ -36,8 +36,11 @@ public class FileHeaderFactory {
         return (Iterable<FileHeader>)this.headers.values();
     }
 
-    public FileHeader create(String content) {
-        FileHeader result = new FileHeader(content, this.config.getSpecialCharacter());
+    public FileHeader create(
+            String content,
+            Map<String, List<String>> alternatingPartsContent) {
+        FileHeader result = new FileHeader(content, 
+                this.config.getSpecialCharacter(), alternatingPartsContent);
         FileHeader cached = this.headers.get(result.getHash());
 
         if (cached != null) {
@@ -46,6 +49,10 @@ public class FileHeaderFactory {
 
         this.headers.put(result.getHash(), result);
         return result;
+    }
+
+    public FileHeader create(String content) {
+        return this.create(content, new HashMap<String, List<String>>());
     }
 
     /**
