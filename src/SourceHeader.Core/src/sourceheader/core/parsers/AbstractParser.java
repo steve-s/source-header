@@ -36,11 +36,21 @@ public abstract class AbstractParser implements HeaderParser {
         }
     }
 
-    public FileHeader parse(Reader reader, FileHeaderFactory headerFactory)
+    public FileHeader parse(Reader reader, FileHeaderFactory headerFactory) 
+            throws IOException, SyntaxErrorException {
+        return this.parse(reader, headerFactory, "");
+    }
+
+    public FileHeader parse(
+            Reader reader,
+            FileHeaderFactory headerFactory,
+            String filename)
             throws IOException, SyntaxErrorException {
         StringBuilder result = new StringBuilder(); // the new header content.
         boolean wasComment = false; // indicates whether first comment was found.
         char c = ' '; // current character read from file.
+        Map<String, List<String>> alternatingPartsContent =
+                new HashMap<String, List<String>>();
 
         while (reader.ready()) {
 
@@ -48,7 +58,7 @@ public abstract class AbstractParser implements HeaderParser {
             c = this.skipWitespace(reader, c, whitespace, wasComment, !wasComment);
 
             if (c == ' ') {
-                return headerFactory.create(result.toString());
+                return headerFactory.create(result.toString(), alternatingPartsContent);
             }
 
             // check for comment start
@@ -58,7 +68,7 @@ public abstract class AbstractParser implements HeaderParser {
 
             if (comment == null) {  // this covers even end of file
                 // no comment starts here, we are done.
-                return headerFactory.create(result.toString());
+                return headerFactory.create(result.toString(), alternatingPartsContent);
             }
 
             // we have start of commet in found variable.
@@ -67,13 +77,14 @@ public abstract class AbstractParser implements HeaderParser {
 
             // read characters till the end of comment
             StringBuilder commentContent = new StringBuilder();
-            c = this.readTillEndOfComment(reader, c, comment, commentContent);
+            c = this.readTillEndOfComment(reader, c, comment, 
+                    commentContent, alternatingPartsContent);
 
             result.append(commentContent);
             wasComment = true;
         }
 
-        return headerFactory.create(result.toString());
+        return headerFactory.create(result.toString(), alternatingPartsContent);
     }
 
     private char skipWitespace(
@@ -116,54 +127,21 @@ public abstract class AbstractParser implements HeaderParser {
             Reader reader,
             char previousInput,
             Block comment,
-            StringBuilder commentContent)
+            StringBuilder commentContent,
+            Map<String, List<String>> alternatingPartsContent)
             throws IOException, SyntaxErrorException {
         
-        List<SearchSequence> alternatingParts =
-                this.getAlternatingPartsSearchSequences();
-        Dictionary<Block, Integer> alternatingPartIndexes =
-                new Hashtable<Block, Integer>();
-        SearchSequence currentAlternatingPart = null;
+        AlternatingPartsHandler alternatingParts =
+                new AlternatingPartsHandler(alternatingPartsContent);
 
         char c = previousInput;
         SearchSequence search = new SearchSequence(null, comment.getEndSequence());        
         while (reader.ready() && !search.found()) {
-
-            if (currentAlternatingPart != null) {
-                if (currentAlternatingPart.next(c)) {
-                    Block block = (Block) currentAlternatingPart.getData();
-                    String name = this.config.getAlternatingPartName(block);
-                    commentContent.append(this.config.getSpecialCharacter());
-                    commentContent.append(name);
-                    commentContent.append(this.config.getSpecialCharacter());
-                    commentContent.append(alternatingPartIndexes.get(block).toString());
-                    commentContent.append(this.config.getSpecialCharacter());
-                    commentContent.append(
-                            ((Block)currentAlternatingPart.getData()).getEndSequence());
-                    currentAlternatingPart = null;
-                }
-            }
-            else {
-                for (SearchSequence sequence : alternatingParts) {
-                    if (sequence.next(c)) {
-                        sequence.reset();
-                        currentAlternatingPart = 
-                                new SearchSequence(
-                                    sequence.getData(),
-                                    ((Block)sequence.getData()).getEndSequence());
-                        Integer i = alternatingPartIndexes.get((Block)sequence.getData());
-                        if (i == null) {
-                            i = new Integer(-1);
-                        }
-                        i++;
-                        alternatingPartIndexes.put((Block)sequence.getData(), i);
-                    }
-                }
-
+            if (!alternatingParts.inAlternatingPart()) {
                 commentContent.append(c);
             }
-
-            search.next(c);            
+            commentContent.append(alternatingParts.next(c));
+            search.next(c);
             c = (char) reader.read();
         }
 
@@ -178,18 +156,6 @@ public abstract class AbstractParser implements HeaderParser {
         }
 
         return c;
-    }
-
-    private List<SearchSequence> getAlternatingPartsSearchSequences() {
-        List<SearchSequence> result =
-                new Vector<SearchSequence>();
-
-        for (String name : this.config.getAlternatingParts().keySet()) {
-            Block block = this.config.getAlternatingParts().get(name);
-            result.add(new SearchSequence(block, block.getStartSequence()));
-        }
-
-        return result;
     }
 
     private CharAndBlock readTillStartOfComment(
@@ -234,6 +200,108 @@ public abstract class AbstractParser implements HeaderParser {
                     block.getStartSequence()));
         }
         return result;
+    }
+
+    private class AlternatingPartsHandler {
+        Map<String, List<String>> parts;
+        List<SearchSequence> searchSequences;
+        Map<Block, Integer> indexes = new HashMap<Block, Integer>();
+        Block currentPart = null;
+        SearchSequence currentPartSearchSequence = null;
+        StringBuilder currentPartContent = new StringBuilder();
+
+        public AlternatingPartsHandler(Map<String, List<String>> parts) {
+            this.parts = parts;
+            this.setUpAlternatingPartsSearchSequences();
+        }
+
+        private void setUpAlternatingPartsSearchSequences() {
+            this.searchSequences =
+                    new Vector<SearchSequence>();
+
+            for (String name : config.getAlternatingParts().keySet()) {
+                Block block = config.getAlternatingParts().get(name);
+                this.searchSequences.add(new SearchSequence(block, block.getStartSequence()));
+            }
+        }
+
+        public String next(char c) {
+            if (this.currentPart != null) {
+                return this.nextInCurrentPart(c);
+            }
+
+            this.nextInSearchForPart(c);
+            return "";
+        }
+
+        private void nextInSearchForPart(char c) {
+            for (SearchSequence sequence : this.searchSequences) {
+                if (sequence.next(c)) {
+                    sequence.reset();
+                    this.currentPart = (Block) sequence.getData();
+                    this.currentPartSearchSequence = new SearchSequence(
+                                sequence.getData(),
+                                this.currentPart.getEndSequence());
+                    Integer i = this.indexes.get((Block)sequence.getData());
+                    if (i == null) {
+                        i = new Integer(-1);
+                    }
+                    i++;
+                    this.indexes.put((Block)sequence.getData(), i);
+                }
+            }
+        }
+
+        private String nextInCurrentPart(char c) {
+            StringBuilder result = new StringBuilder();
+            if (this.currentPartSearchSequence.next(c)) {
+                // add id with index into result
+                this.appendIdOfCurrentPart(result);
+
+                this.putCurrentPartContentIntoContentsMap();
+
+                // reset everything
+                this.currentPartContent.setLength(0);
+                this.currentPart = null;
+                this.currentPartSearchSequence = null;
+            }
+            else {
+                this.currentPartContent.append(c);
+            }
+
+            return result.toString();
+        }
+
+        private void appendIdOfCurrentPart(StringBuilder result) {
+            result.append(config.getSpecialCharacter());
+            result.append(this.getCurrentPartName());
+            result.append(config.getSpecialCharacter());
+            result.append(this.indexes.get(this.currentPart).toString());
+            result.append(config.getSpecialCharacter());
+            result.append(this.currentPart.getEndSequence());
+        }
+
+        private void putCurrentPartContentIntoContentsMap() {
+                // put the content into list of contents
+                if (!this.parts.containsKey(this.getCurrentPartName())) {
+                    this.parts.put(this.getCurrentPartName(),
+                            new Vector<String>());
+                }
+                //cut-off block end sequence:
+                this.currentPartContent.setLength(
+                        this.currentPartContent.length() -
+                        this.currentPart.getEndSequence().length() + 1);
+                this.parts.get(this.getCurrentPartName())
+                        .add(this.currentPartContent.toString());
+        }
+
+        private String getCurrentPartName() {
+            return config.getAlternatingPartName(this.currentPart);
+        }
+
+        public boolean inAlternatingPart() {
+            return this.currentPart != null;
+        }
     }
 
     private class SearchSequence {
