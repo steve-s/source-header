@@ -25,6 +25,9 @@ public class FilesTreeFactoryTest {
     final String mainHeader = "// main.cpp is \n//" +
             " project file \n// hello world \n";
 
+    final String mainHeaderParsed = "// %filename% is \n//" +
+            " project file \n// hello world \n";
+
     final String classHeader =
             "/*\n" +
             " * To change this template, choose Tools | Templates\n" +
@@ -93,7 +96,7 @@ public class FilesTreeFactoryTest {
         File file = tree.getFiles().iterator().next();
         assertEquals("main.cpp", file.getName());
         assertEquals("cpp", file.getExtension());
-        assertEquals(mainHeader, file.getHeader().getContent());
+        assertEquals(mainHeaderParsed, file.getHeader().getContent());
 
         Folder folder = tree.getFolders().iterator().next();
         assertEquals("folder", folder.getName());
@@ -109,9 +112,6 @@ public class FilesTreeFactoryTest {
                 hpp = f;
             }
         }
-
-        this.writeToFile(new Path("expected.txt"), classHeader);
-        this.writeToFile(new Path("actual.txt"), cpp.getHeader().getContent());
 
         assertNotNull(cpp);
         assertEquals("class.cpp", cpp.getName());
