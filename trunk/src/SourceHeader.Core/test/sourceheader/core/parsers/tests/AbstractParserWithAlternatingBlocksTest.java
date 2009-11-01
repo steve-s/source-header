@@ -27,8 +27,37 @@ import java.util.Map;
 public class AbstractParserWithAlternatingBlocksTest {
 
     @Test
-    public void test_parse_with_filename_in_content() {
-        fail("TODO");
+    public void test_parse_with_filename_in_content() throws IOException, SyntaxErrorException {
+        Map<String, Block> parts = new HashMap<String, Block>();
+        ParsersConfig config = new ParsersConfig('%', parts);
+
+        AbstractParser parser =
+            new AbstractParser(config) {
+                @Override
+                protected Iterable<Block> getCommentBlocks() {
+                    return (Iterable<Block>)
+                            Arrays.asList(new Block[]{ new Block("/*","*/")});
+                }
+
+                @Override
+                public String[] getExtensions() {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+        };
+
+        FileHeaderFactory factory =
+                new FileHeaderFactory(Utils.getParsersConfig(),
+                    new HeaderParser[] {});
+
+        Reader reader =
+                new StringReader("/* \n Hello filename.java world!\n" +
+                                "filename.java */ \n");
+
+        FileHeader header = parser.parse(reader, factory, "filename.java");
+
+        assertEquals("/* \n Hello %filename% world!\n" +
+                "%filename% */",
+                header.getContent());
     }
 
     @Test

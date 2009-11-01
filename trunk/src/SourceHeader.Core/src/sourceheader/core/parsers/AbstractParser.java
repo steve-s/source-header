@@ -29,7 +29,7 @@ public abstract class AbstractParser implements HeaderParser {
     public FileHeader parse(Path path, FileHeaderFactory headerFactory) 
             throws IOException, SyntaxErrorException {
         try {
-            return this.parse(new FileReader(path), headerFactory);
+            return this.parse(new FileReader(path), headerFactory, path.getName());
         }
         catch(SyntaxErrorException ex) {
             throw new SyntaxErrorException(path.getAbsolutePath());
@@ -78,7 +78,7 @@ public abstract class AbstractParser implements HeaderParser {
             // read characters till the end of comment
             StringBuilder commentContent = new StringBuilder();
             c = this.readTillEndOfComment(reader, c, comment, 
-                    commentContent, alternatingPartsContent);
+                    commentContent, alternatingPartsContent, filename);
 
             result.append(commentContent);
             wasComment = true;
@@ -128,17 +128,29 @@ public abstract class AbstractParser implements HeaderParser {
             char previousInput,
             Block comment,
             StringBuilder commentContent,
-            Map<String, List<String>> alternatingPartsContent)
+            Map<String, List<String>> alternatingPartsContent,
+            String filename)
             throws IOException, SyntaxErrorException {
         
         AlternatingPartsHandler alternatingParts =
                 new AlternatingPartsHandler(alternatingPartsContent);
+        SearchSequence filenameSequence = new SearchSequence(null, filename);
 
         char c = previousInput;
         SearchSequence search = new SearchSequence(null, comment.getEndSequence());        
         while (reader.ready() && !search.found()) {
             if (!alternatingParts.inAlternatingPart()) {
-                commentContent.append(c);
+                if (!filename.isEmpty() && filenameSequence.next(c)) {
+                    filenameSequence.reset();
+                    commentContent.delete(
+                            commentContent.length()-filename.length()+1,
+                            commentContent.length());
+                    commentContent.append( this.config.getSpecialCharacter() +
+                            "filename" + this.config.getSpecialCharacter());
+                }
+                else {
+                    commentContent.append(c);
+                }
             }
             commentContent.append(alternatingParts.next(c));
             search.next(c);

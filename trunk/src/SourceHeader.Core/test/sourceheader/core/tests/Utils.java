@@ -5,6 +5,9 @@
 
 package sourceheader.core.tests;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import sourceheader.core.parsers.ParsersConfig;
 
 /**
@@ -14,5 +17,11 @@ import sourceheader.core.parsers.ParsersConfig;
 public class Utils {
     public static ParsersConfig getParsersConfig() {
         return new ParsersConfig('%');
-    }            
+    }
+
+    public static void writeToFile(String filename, String content) throws IOException {
+        BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
+        writer.write(content);
+        writer.close();
+    }
 }
