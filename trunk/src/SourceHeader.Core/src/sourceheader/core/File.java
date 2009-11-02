@@ -162,6 +162,11 @@ public class File {
         }
     }
 
+    @Override
+    public String toString() {
+        return this.getPath().getName();
+    }        
+
     public class FileCannotBeUpdateException extends IOException {
         public FileCannotBeUpdateException(Throwable exception) {
             super("File header cannot be updated.", exception);

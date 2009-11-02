@@ -4,6 +4,9 @@
 
 package sourceheader.gui;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.jdesktop.application.Action;
 import org.jdesktop.application.ResourceMap;
 import org.jdesktop.application.SingleFrameApplication;
@@ -13,8 +16,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.*;
 import javax.swing.tree.*;
+import sourceheader.core.*;
+import sourceheader.core.HeaderParser.SyntaxErrorException;
+import sourceheader.core.parsers.*;
 import sourceheader.gui.controller.*;
-import sourceheader.gui.util.TreeNodeAdapter;
+import sourceheader.gui.util.FilesTreeCellRenderer;
+import sourceheader.gui.util.TreeRootAdapter;
 
 /**
  * The application's main frame.
@@ -23,6 +30,7 @@ public class View extends FrameView {
 
     private ViewData viewData;
     private Controller controller;
+    private TreeRootAdapter treeRoot;
 
     public View(SingleFrameApplication app) {
         super(app);
@@ -31,17 +39,33 @@ public class View extends FrameView {
 
         this.viewData = new ViewData();
         this.controller = new ControllerImpl(viewData);
+
+        FileHeaderFactory headerFactory = new FileHeaderFactory(
+                    new ParsersConfig('$'),
+                    new HeaderParser[] {
+                        new CppParser(new ParsersConfig('$')),
+                        new ScriptsParser(new ParsersConfig('$'))
+                  });
+        FilesTreeFactory factory = new FilesTreeFactory(headerFactory);
+        try {
+            this.filesTree =
+                    new JTree(new TreeRootAdapter(factory.create(new Path("./test-data"))));
+        } catch (IOException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SyntaxErrorException ex) {
+            Logger.getLogger(View.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.filesTree.setCellRenderer(new FilesTreeCellRenderer());
+        this.treeScrollPane.setViewportView(this.filesTree);
     }
 
     @Action
-    public void showAboutBox() {
-        /*if (aboutBox == null) {
-            JFrame mainFrame = sourceheader.gui.Application
+    public void showAboutBox() {        
+        JFrame mainFrame = sourceheader.gui.Application
                     .getApplication().getMainFrame();
             aboutBox = new AboutBox(mainFrame);
             aboutBox.setLocationRelativeTo(mainFrame);
-        }
-        Application.getApplication().show(aboutBox);*/
+        Application.getApplication().show(aboutBox);
     }
 
     /** This method is called from within the constructor to
@@ -54,7 +78,7 @@ public class View extends FrameView {
     private void initComponents() {
 
         mainPanel = new javax.swing.JPanel();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        treeScrollPane = new javax.swing.JScrollPane();
         filesTree = new javax.swing.JTree();
         statusPanel = new javax.swing.JPanel();
         javax.swing.JSeparator statusPanelSeparator = new javax.swing.JSeparator();
@@ -64,11 +88,11 @@ public class View extends FrameView {
 
         mainPanel.setName("mainPanel"); // NOI18N
 
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
+        treeScrollPane.setName("treeScrollPane"); // NOI18N
 
         filesTree.setName("filesystemTree"); // NOI18N
         filesTree.setOpaque(false);
-        jScrollPane1.setViewportView(filesTree);
+        treeScrollPane.setViewportView(filesTree);
 
         javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
         mainPanel.setLayout(mainPanelLayout);
@@ -76,14 +100,14 @@ public class View extends FrameView {
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGap(86, 86, 86)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(treeScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(128, Short.MAX_VALUE))
         );
         mainPanelLayout.setVerticalGroup(
             mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(mainPanelLayout.createSequentialGroup()
                 .addGap(62, 62, 62)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(treeScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 203, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(32, Short.MAX_VALUE))
         );
 
@@ -186,12 +210,12 @@ public class View extends FrameView {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTree filesTree;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JLabel statusAnimationLabel;
     private javax.swing.JLabel statusMessageLabel;
     private javax.swing.JPanel statusPanel;
+    private javax.swing.JScrollPane treeScrollPane;
     // End of variables declaration//GEN-END:variables
 
     private Timer messageTimer;
