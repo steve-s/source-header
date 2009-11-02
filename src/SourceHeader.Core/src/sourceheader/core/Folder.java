@@ -59,4 +59,9 @@ public class Folder {
     public Iterable<File> getFiles() {
         return files;
     }
+
+    @Override
+    public String toString() {
+        return this.getPath().getName();
+    }
 }
