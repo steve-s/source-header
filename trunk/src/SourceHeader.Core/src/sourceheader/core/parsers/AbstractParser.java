@@ -26,13 +26,16 @@ public abstract class AbstractParser implements HeaderParser {
         this.config = config;
     }
 
-    public FileHeader parse(Path path, FileHeaderFactory headerFactory) 
+    private Path path;
+
+    public FileHeader parse(Path path, FileHeaderFactory headerFactory)
             throws IOException, SyntaxErrorException {
+        this.path = path;
         try {
             return this.parse(new FileReader(path), headerFactory, path.getName());
         }
         catch(SyntaxErrorException ex) {
-            throw new SyntaxErrorException(path.getAbsolutePath());
+            throw new SyntaxErrorException(path, ex);
         }
     }
 
@@ -162,7 +165,9 @@ public abstract class AbstractParser implements HeaderParser {
             // be last character of searched sequence...
             search.next(c);
             if (!search.found()) {
-                throw new SyntaxErrorException();
+                throw new SyntaxErrorException(
+                    "Sequence " + search.sequence + " that should finish" +
+                    "the comment was not found but the end of file was reached.");
             }
             commentContent.append(c);
         }
@@ -362,7 +367,14 @@ public abstract class AbstractParser implements HeaderParser {
             }
 
             this.current.setLength(0);
-            return false;
+
+            // 'c' might be first character of sequence
+            if (c == this.nextCharacter()) {
+                this.current.append(c);
+                return this.found();
+            }
+
+            return false;    
         }
     }
 }

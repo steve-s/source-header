@@ -15,6 +15,8 @@ import sourceheader.core.util.Filesystem;
 public class File {
 
     private static Path tmpPath = new Path(".");
+    private java.io.File tmpFile;
+    private java.io.File backupFile;
 
     public static void setTmpPath(Path path) {
         tmpPath = path;
@@ -89,12 +91,14 @@ public class File {
     /**
      * @return path to tmp file.
      */
-    private Path getTmpFilePath() {
-        return new Path(tmpPath, this.getTmpFilename());
+    private java.io.File getTmpFilePath() {
+        //return new Path(tmpPath, this.getTmpFilename());
+        return this.tmpFile;
     }
 
-    private Path getBackupFilePath() {
-        return new Path(tmpPath, this.getTmpFilename() + ".bac");
+    private java.io.File getBackupFilePath() {
+        //return new Path(tmpPath, this.getTmpFilename() + ".bac");
+        return this.backupFile;
     }
 
     /**
@@ -102,7 +106,9 @@ public class File {
      * via this.getHeader() and other content from filesystem.
      */
     private void crateTmpFileWithNewContent()
-            throws FileNotFoundException, IOException {
+            throws FileNotFoundException, IOException {        
+        this.tmpFile =
+                java.io.File.createTempFile(this.getTmpFilename(), "new");
         this.copyHeaderTo(this.getTmpFilePath());
         // copy content of previous file to new one, without old header.
         // I have to skip newlines count + 1, because eg. one line header
@@ -116,6 +122,7 @@ public class File {
      * @throws IOException
      */
     private void replaceWithTmpFile() throws IOException {
+        assert this.getTmpFilePath() != null;
         try {
             Filesystem.copyText(this.getTmpFilePath(),this.getPath(), 0, false);
         }
@@ -136,7 +143,9 @@ public class File {
      */
     private void createBackup() throws BackupCannotBeCareatedException {
         try {
-            Filesystem.copyText(this.getPath(),this.getBackupFilePath());
+            this.backupFile =
+                    java.io.File.createTempFile(this.getTmpFilename(), "back");
+            Filesystem.copyText(this.getPath(), this.getBackupFilePath());
         }
         catch(IOException ex) {
             throw new BackupCannotBeCareatedException(ex);
@@ -148,7 +157,7 @@ public class File {
      * @param path
      * @throws IOException
      */
-    private void copyHeaderTo(Path path) throws IOException {
+    private void copyHeaderTo(java.io.File path) throws IOException {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(path, false));

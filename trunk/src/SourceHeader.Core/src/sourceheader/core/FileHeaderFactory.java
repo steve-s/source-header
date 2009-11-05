@@ -55,6 +55,10 @@ public class FileHeaderFactory {
         return this.create(content, new HashMap<String, List<String>>());
     }
 
+    public boolean hasParserFor(Path file) {
+        return this.findParserFor(file) != null;
+    }
+
     /**
      * Extracts header from given file and creates
      * @link sourceheader.core#FileHeader FileHeader class instance for it.

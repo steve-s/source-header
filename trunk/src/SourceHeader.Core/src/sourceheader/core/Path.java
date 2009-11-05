@@ -6,6 +6,7 @@
 package sourceheader.core;
 
 
+import java.io.File;
 import java.util.*;
 
 /**
@@ -24,6 +25,10 @@ public class Path extends java.io.File {
 
     public Path(java.io.File parent, String child) {
         super(parent, child);
+    }
+
+    public Path(java.io.File javaFile) {
+        super(javaFile.getAbsolutePath());
     }
 
     /**
