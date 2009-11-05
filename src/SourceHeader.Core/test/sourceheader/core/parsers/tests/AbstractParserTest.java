@@ -31,12 +31,12 @@ public class AbstractParserTest {
         
         Reader reader = 
                 new StringReader("\n\n\t\t  " + 
-                "\n/*This is really\n\tcute\n\n header*/\n\n\n" +
+                "\n/*This is really\n\tcute\n\n header****/\n\n\n" +
                 "/*3 new lines should exclude this from header*/\n\n #include;");
 
         FileHeader header = parser.parse(reader, factory);
 
-        assertEquals("\n\n\t\t  \n/*This is really\n\tcute\n\n header*/",
+        assertEquals("\n\n\t\t  \n/*This is really\n\tcute\n\n header****/",
                 header.getContent());
     }
 

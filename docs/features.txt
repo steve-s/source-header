@@ -1,0 +1,3 @@
+
+- nova fce u Path - getAllChildrenCount a potom otazka v pripade prilis hodne deti v gui.
+- zamykani editovanych souboru pomoci channelu.

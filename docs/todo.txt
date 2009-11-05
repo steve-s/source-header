@@ -1,0 +1,4 @@
+- gui
+- metody pro IView
+- metody pro IController.IObserver
+- metody IController

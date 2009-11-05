@@ -19,12 +19,27 @@ public interface HeaderParser {
     String[] getExtensions();
 
     public class SyntaxErrorException extends Exception {
-        public SyntaxErrorException(String filename) {
-            super("There is syntax error in input file " + filename + ".");
+        private Path path = null;
+
+        public Path getFile() {
+            return path;
         }
 
-        public SyntaxErrorException() {
-            super("There is syntax error in input file.");
+        public SyntaxErrorException(Path file, Throwable ex) {            
+            super("There is syntax error in input file " + 
+                    file.getAbsolutePath() + ". Detail: " +
+                    ex.getMessage());
+            this.path = file;
+        }
+
+        public SyntaxErrorException(String message) {
+            super(message);
+        }
+
+        public SyntaxErrorException(Path file) {
+            super("There is syntax error in input file " +
+                    file.getAbsolutePath() + ".");
+            this.path = file;
         }
     }
 }

@@ -10,5 +10,6 @@ package sourceheader.gui.controller;
  * @author steve
  */
 public interface Controller {
-
+    void chooseRootButtonClicked();
+    void currentHeaderSelectChanged();
 }
