@@ -23,6 +23,9 @@ public class FilesystemTest {
     public void setUp() throws IOException {
         this.getFile1().delete();
         this.getFile2().delete();
+        for(java.io.File f : TestsConfig.getRootForTests().listFiles()) {
+            f.delete();
+        }
         
         this.getFile1().createNewFile();
         BufferedWriter writer =
@@ -60,5 +63,19 @@ public class FilesystemTest {
         }
 
         assertEquals(4, count);
+    }
+
+    @Test
+    public void test_getFilesCount() {
+        assertEquals(2,
+                Filesystem.getFilesCount(
+                    TestsConfig.getRootForTests(),
+                    new FileFilter() {
+                        public boolean accept(File pathname) {
+                            return !pathname.isHidden() && 
+                                   !pathname.getName().startsWith(".") &&
+                                   !pathname.isDirectory();
+                        }
+                    }));
     }
 }

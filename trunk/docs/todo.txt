@@ -1,4 +1,11 @@
-- gui
-- metody pro IView
-- metody pro IController.IObserver
-- metody IController
+
+Core:
+	- problem s alternating parts, potreba refactoringu (CRITICAL)
+	- predelat na nio
+	
+Gui:
+	- horni panel
+		- novy header
+		- update headeru
+		- update headeru do oznacenych souboru
+	- napoveda o programu

@@ -1,263 +1,133 @@
 /*
- * SourceHeaderView.java
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
  */
 
 package sourceheader.gui;
 
-import org.jdesktop.application.Action;
-import org.jdesktop.application.SingleFrameApplication;
-import org.jdesktop.application.FrameView;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.tree.*;
 import sourceheader.core.*;
 import sourceheader.gui.controller.*;
-import sourceheader.gui.util.FilesTreeCellRenderer;
-import sourceheader.gui.util.TreeRootAdapter;
+import sourceheader.gui.util.*;
 
 /**
- * The application's main frame.
+ *
+ * @author steve
  */
-public class View extends FrameView implements IView, ViewData.ViewDataObserver {
+public class View extends JFrame
+        implements IView, ViewData.ViewDataObserver {
 
-    private ViewData viewData;
-    private Controller controller;
+    private final JTree filesTree = new JTree();
+    private final Controller controller;
+    private final JTextArea souceTextArea = new JTextArea();
+    private final ViewData viewData;
 
-    public View(SingleFrameApplication app) {
-        super(app);
-        this.initComponents();
+    public View() {
+        super("Source header v0.1");
+        this.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception ex) {}
+        this.setLayout(new BorderLayout(10, 3));
 
         this.viewData = new ViewData();
-        viewData.setObserver(this);
-        this.controller = new ControllerImpl(viewData, this);
+        this.controller = new ControllerImpl(this.viewData, this);
+        this.viewData.setObserver(this);
+
+        this.initCentralSplitPane();
+        this.initTopPanel();
+
+        this.pack();
+        this.setVisible(true);
     }
 
-    public void updateFilesTree() {
-        this.filesTree =
-                new JTree(new TreeRootAdapter(this.viewData.getFilesTree()));
+    private void initTopPanel() {
+        JPanel topPanel = new JPanel(new BorderLayout(10,10));
+
+        JButton openButton = new JButton("Open...");
+        openButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                View.this.controller.chooseRootButtonClicked();
+            }
+        });
+        topPanel.add(openButton, BorderLayout.WEST);
+
+        JPanel sourceControlPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints constraints = new GridBagConstraints();
+        
+        this.add(topPanel, BorderLayout.NORTH);
+    }
+
+    private void initCentralSplitPane() {
+        JSplitPane centralSplitPane = new JSplitPane();
+        centralSplitPane.setDividerSize(10);
+        centralSplitPane.setDividerLocation(0.3f);
+
         this.filesTree.setCellRenderer(new FilesTreeCellRenderer());
-        this.treeScrollPane.setViewportView(this.filesTree);
-    }
+        this.filesTree.addTreeSelectionListener(new FilesTreeSelectionListener());
 
-    /* --- IView members ---- */
+        centralSplitPane.setLeftComponent(this.filesTree);
+        centralSplitPane.setRightComponent(this.souceTextArea);
+        this.add(centralSplitPane, BorderLayout.CENTER);
+    }
 
     public Path getPathFromUser() {
         JFileChooser dialog = new JFileChooser();
+        dialog.setMultiSelectionEnabled(false);
         dialog.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-        int result = dialog.showOpenDialog(this.chooseRootButton);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            java.io.File selectedFile = dialog.getSelectedFile();
-            return new Path(selectedFile);
+        if (dialog.showOpenDialog(View.this) == JFileChooser.APPROVE_OPTION) {
+            return new Path(dialog.getSelectedFile());
         }
 
         return null;
     }
 
     public void warningDialog(String content, String title) {
-        
+        JOptionPane.showMessageDialog(this, content, title, JOptionPane.WARNING_MESSAGE);
+    }
+
+    public boolean questionDialog(String content, String title) {
+        int result = JOptionPane.showConfirmDialog(
+                            this, content, title,
+                            JOptionPane.YES_NO_CANCEL_OPTION);
+        return result == JOptionPane.YES_OPTION;
     }
 
     public void indeterminateProgress() {
-        this.progressBar.setIndeterminate(true);
-    }
-
-    public void determinateProgress() {
-        this.progressBar.setIndeterminate(false);
-    }
-
-    /* --- ViewData.Observer members --- */
-    public void currentHeaderChanged() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    public void determinateProgress() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void currentHeaderChanged() {
+        this.souceTextArea.setText(
+                this.viewData.getCurrentHeader().getContent());
+    }
+
     public void filesTreeChanged() {
-        this.updateFilesTree();
+        this.filesTree.setModel(
+            new DefaultTreeModel(
+                new TreeRootAdapter(this.viewData.getFilesTree())));
+        this.filesTree.setCellRenderer(new FilesTreeCellRenderer());
     }
 
-    /* --- gui actions --- */
-    @Action
-    public void chooseRootButtonClicked() {
-        this.controller.chooseRootButtonClicked();
+    private class FilesTreeSelectionListener implements TreeSelectionListener {
+        public void valueChanged(TreeSelectionEvent e) {
+            Object obj = e.getPath().getLastPathComponent();
+            if (obj instanceof DefaultMutableTreeNode) {
+                if (((DefaultMutableTreeNode) obj).getUserObject() instanceof File) {
+                    File file = (File) ((DefaultMutableTreeNode)obj).getUserObject();
+                    View.this.controller.currentHeaderSelectChanged(file.getHeader());
+                }
+            }
+        }
     }
-
-    @Action
-    public void showAboutBox() {        
-        /*JFrame mainFrame = sourceheader.gui.Application
-                    .getApplication().getMainFrame();
-            aboutBox = new AboutBox(mainFrame);
-            aboutBox.setLocationRelativeTo(mainFrame);
-        Application.getApplication().show(aboutBox);*/
-    }
-
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
-     */
-    @SuppressWarnings("unchecked")
-    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
-    private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
-
-        mainPanel = new javax.swing.JPanel();
-        treeScrollPane = new javax.swing.JScrollPane();
-        filesTree = new javax.swing.JTree();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jPanel1 = new javax.swing.JPanel();
-        jSeparator1 = new javax.swing.JSeparator();
-        progressBar = new javax.swing.JProgressBar();
-        jPanel2 = new javax.swing.JPanel();
-        jButton2 = new javax.swing.JButton();
-        jPanel3 = new javax.swing.JPanel();
-        chooseRootButton = new javax.swing.JButton();
-
-        mainPanel.setName("mainPanel"); // NOI18N
-
-        treeScrollPane.setName("treeScrollPane"); // NOI18N
-
-        filesTree.setName("filesystemTree"); // NOI18N
-        filesTree.setOpaque(false);
-        treeScrollPane.setViewportView(filesTree);
-
-        jScrollPane1.setName("jScrollPane1"); // NOI18N
-
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jTextArea1.setName("jTextArea1"); // NOI18N
-        jScrollPane1.setViewportView(jTextArea1);
-
-        jPanel1.setName("jPanel1"); // NOI18N
-
-        jSeparator1.setName("jSeparator1"); // NOI18N
-
-        progressBar.setName("progressBar"); // NOI18N
-
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(407, Short.MAX_VALUE)
-                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 553, Short.MAX_VALUE))
-        );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(progressBar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(jPanel1Layout.createSequentialGroup()
-                    .addGap(1, 1, 1)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(14, Short.MAX_VALUE)))
-        );
-
-        jPanel2.setName("jPanel2"); // NOI18N
-
-        org.jdesktop.application.ResourceMap resourceMap = org.jdesktop.application.Application.getInstance(sourceheader.gui.Application.class).getContext().getResourceMap(View.class);
-        jButton2.setText(resourceMap.getString("jButton2.text")); // NOI18N
-        jButton2.setName("jButton2"); // NOI18N
-
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addComponent(jButton2)
-                .addContainerGap(306, Short.MAX_VALUE))
-        );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jButton2)
-        );
-
-        jPanel3.setName("jPanel3"); // NOI18N
-
-        javax.swing.ActionMap actionMap = org.jdesktop.application.Application.getInstance(sourceheader.gui.Application.class).getContext().getActionMap(View.class, this);
-        chooseRootButton.setAction(actionMap.get("chooseRootButtonClicked")); // NOI18N
-        chooseRootButton.setText(resourceMap.getString("chooseRootButton.text")); // NOI18N
-        chooseRootButton.setActionCommand(resourceMap.getString("chooseRootButton.actionCommand")); // NOI18N
-        chooseRootButton.setName("chooseRootButton"); // NOI18N
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(chooseRootButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(chooseRootButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-
-        javax.swing.GroupLayout mainPanelLayout = new javax.swing.GroupLayout(mainPanel);
-        mainPanel.setLayout(mainPanelLayout);
-        mainPanelLayout.setHorizontalGroup(
-            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, mainPanelLayout.createSequentialGroup()
-                        .addComponent(treeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 168, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE)))
-                    .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap())
-        );
-        mainPanelLayout.setVerticalGroup(
-            mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(mainPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(mainPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(6, 6, 6))
-                    .addGroup(mainPanelLayout.createSequentialGroup()
-                        .addComponent(treeScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 306, Short.MAX_VALUE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
-        setComponent(mainPanel);
-    }// </editor-fold>//GEN-END:initComponents
-
-
-    // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton chooseRootButton;
-    private javax.swing.JTree filesTree;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JPanel mainPanel;
-    private javax.swing.JProgressBar progressBar;
-    private javax.swing.JScrollPane treeScrollPane;
-    // End of variables declaration//GEN-END:variables
-
-    private Timer messageTimer;
-    private Timer busyIconTimer;
-    private Icon idleIcon;
-    private Icon[] busyIcons = new Icon[15];
-    private int busyIconIndex = 0;
-
-    private JDialog aboutBox;
 }
