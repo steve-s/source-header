@@ -5,12 +5,14 @@
 
 package sourceheader.gui.controller;
 
+import java.io.FileFilter;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import sourceheader.core.*;
 import sourceheader.core.HeaderParser.SyntaxErrorException;
 import sourceheader.core.parsers.*;
+import sourceheader.core.util.Filesystem;
 import sourceheader.gui.IView;
 import sourceheader.gui.ViewData;
 
@@ -38,24 +40,37 @@ public class ControllerImpl implements Controller {
          this.treeFactory = new FilesTreeFactory(headerFactory);
     }
 
-    public void currentHeaderSelectChanged() {
-        
+    public void currentHeaderSelectChanged(FileHeader header) {
+        this.viewData.setCurrentHeader(header);
     }
 
     public void chooseRootButtonClicked() {
         Path path = this.view.getPathFromUser();
         if (path != null) {
             try {
+                long filesCount =
+                        Filesystem.getFilesCount(path, 40, new FileFilter() {
+                                public boolean accept(java.io.File pathname) {
+                                    return !pathname.isHidden() &&
+                                        !pathname.getName().startsWith(".");
+                                }
+                            });
+
+                if (filesCount >= 40) {
+                    boolean result =
+                        this.view.questionDialog("Directory contains too many files. Processing it may take some time. Are you sure?",
+                            "Too many files.");
+                    if (!result) {
+                        return;
+                    }
+                }
+
                 FilesTree tree = this.treeFactory.create(path);
                 this.viewData.setFilesTree(tree);
             } catch (IOException ex) {
                 this.view.warningDialog("TODO", "TODO");
-                Logger.getLogger(ControllerImpl.class.getName())
-                        .log(Level.SEVERE, null, ex);
             } catch (SyntaxErrorException ex) {
                 this.view.warningDialog("TODO", "TODO");
-                Logger.getLogger(ControllerImpl.class.getName())
-                        .log(Level.SEVERE, null, ex);
             }
         }
     }

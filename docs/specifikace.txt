@@ -1,0 +1,33 @@
+﻿Program SourceHeader bude slouzit k usnadneni spravy hlavicek zdrojovych souboru. 
+Hlavicka zdrojoveho souboru muze vypadat napr. nasledovne:
+/* BigDecimal.java
+   Copyright (C) 1999, 2000, 2001, 2003, 2005, 2006 Free Software Foundation, Inc.   
+   This file is part of GNU Classpath.
+   
+   <description>
+		Arbitrary precision decimals.
+   </description>
+*/
+
+
+Pouziti bude vypadat nasledovne:
+
+Uzivatel si v grafickem rozhrani vybere slozku, ve ktere se nachazeji zdrojove soubory.
+
+Program soubory projde, identifikuje jejich hlavicky a zobrazi je ve stromove srukture, 
+pricemz nejakym zpusobem (stejne obarveni textu nazvu, ikona apod.) oznaci soubory se stejnou hlavickou.
+
+Uzivatel potom bude mit moznost editovat jednotlive hlavicky a novou verzi dane hlavicky fyzicky updatovat 
+do souboru.
+
+Dalsi moznosti bude vytvoreni nove hlavicky a jeji updatovani do vybranych souboru, pricemz, 
+pokud soubor jiz nejakou hlavicku obsahoval, bude nahrazena novou.
+
+
+Nektere detaily:
+
+Program bude hlavicky mezi sebou rozpoznavat ciste textove, 
+protoze ale casto hlavicky obsahuji casti, ktere se u jednotlivych souboru meni, bude program:
+a) rozpoznavat jmeno souboru v textu hlavicky
+b) rozpoznavat uzivatelsky definovane sekce, ktere mohou mit ruzny obsah vramci jedne hlavicky, 
+takovou sekci muze byt napr. <description> </description> v ukazkove hlavicce.

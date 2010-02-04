@@ -5,11 +5,13 @@
 
 package sourceheader.gui.controller;
 
+import sourceheader.core.FileHeader;
+
 /**
  *
  * @author steve
  */
 public interface Controller {
     void chooseRootButtonClicked();
-    void currentHeaderSelectChanged();
+    void currentHeaderSelectChanged(FileHeader header);
 }

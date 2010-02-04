@@ -6,6 +6,9 @@
 package sourceheader.core.util;
 
 import java.io.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Stack;
 
 /**
  * @author steve
@@ -61,5 +64,38 @@ public class Filesystem {
         BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
         writer.write("", 0, 0);
         writer.close();
+    }
+
+    public static long getFilesCount(File file, long maxCount, FileFilter fileFilter)
+    {
+        if (file.isFile()) {
+            return 1;
+        }
+
+        long result = 0;
+        Stack<File> dirs = new Stack<File>();
+        dirs.add(file);
+        while (!dirs.empty()) {
+            File current = dirs.pop();
+            File[] children = current.listFiles();
+
+            for(int i=children.length-1; i>=0; i--) {
+                File child = children[i];
+                if (!fileFilter.accept(child)) {
+                    continue;
+                }
+                else if (child.isFile()) {
+                    result++;
+                    if (result >= maxCount) {
+                        return result;
+                    }
+                }
+                else if (child.isDirectory()) {
+                    dirs.push(child);
+                }
+            }
+        }
+
+        return result;
     }
 }

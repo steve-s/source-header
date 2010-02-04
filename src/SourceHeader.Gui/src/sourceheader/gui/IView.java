@@ -14,6 +14,7 @@ import sourceheader.core.Path;
 public interface IView {
     Path getPathFromUser();
     void warningDialog(String content, String title);
+    boolean questionDialog(String content, String title);
 
     void indeterminateProgress();
     void determinateProgress();

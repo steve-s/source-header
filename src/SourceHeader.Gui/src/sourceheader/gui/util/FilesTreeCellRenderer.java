@@ -5,27 +5,28 @@
 
 package sourceheader.gui.util;
 
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
-import javax.swing.BoxLayout;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JCheckBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTree;
-import javax.swing.UIManager;
+import java.awt.*;
+import java.awt.image.*;
+import java.util.*;
+import javax.swing.*;
 import javax.swing.tree.*;
+import sourceheader.core.File;
+import sourceheader.core.FileHeader;
 
 /**
  *
  * @author steve
  */
 public class FilesTreeCellRenderer implements TreeCellRenderer {
+    private Dictionary<FileHeader, Color> headerColors = new Hashtable<FileHeader, Color>();
+    private final java.util.List<Color> colorsList =
+            new ArrayList<Color>() {
+                {
+                    add(Color.RED);
+                    add(Color.BLUE);
+                    add(Color.YELLOW);
+                    add(Color.GREEN);
+                }};
 
     private Icon getLeafIcon() {
         Icon icon = UIManager.getIcon("Tree.leafIcon");
@@ -47,8 +48,7 @@ public class FilesTreeCellRenderer implements TreeCellRenderer {
             boolean expanded,
             boolean leaf,
             int row,
-            boolean hasFocus) {
-
+            boolean hasFocus) {        
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, 2));
 
@@ -57,6 +57,22 @@ public class FilesTreeCellRenderer implements TreeCellRenderer {
 
         JLabel label = new JLabel(value.toString());
         panel.add(label);
+
+        if (value instanceof DefaultMutableTreeNode &&
+            ((DefaultMutableTreeNode)value).getUserObject() instanceof File) {
+            File file = (File)((DefaultMutableTreeNode)value).getUserObject();
+
+            Color color = this.headerColors.get(file.getHeader());
+            if (color == null && this.colorsList.size() > 0) {
+                color = this.colorsList.get(this.colorsList.size()-1);
+                this.colorsList.remove(color);
+                this.headerColors.put(file.getHeader(), color);
+            }
+
+            if (color != null) {
+                label.setForeground(color);
+            }
+        }
 
         if (leaf) {
             label.setIcon(this.getLeafIcon());
