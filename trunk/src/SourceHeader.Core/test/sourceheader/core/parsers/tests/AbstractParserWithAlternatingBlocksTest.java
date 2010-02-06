@@ -53,11 +53,12 @@ public class AbstractParserWithAlternatingBlocksTest {
                 new StringReader("/* \n Hello filename.java world!\n" +
                                 "filename.java */ \n");
 
-        FileHeader header = parser.parse(reader, factory, "filename.java");
+        HeaderParser.HeaderAndAlternatingParts result =
+                parser.parse(reader, factory, "filename.java");
 
         assertEquals("/* \n Hello %filename% world!\n" +
                 "%filename% */",
-                header.getContent());
+                result.header.getContent());
     }
 
     @Test
@@ -89,14 +90,16 @@ public class AbstractParserWithAlternatingBlocksTest {
         Reader reader =
                 new StringReader("/* \n <desc>alternating-tet</desc> */ \n");
 
-        FileHeader header = parser.parse(reader, factory);
+        HeaderParser.HeaderAndAlternatingParts result =
+                parser.parse(reader, factory);
 
         assertEquals("/* \n <desc>%desc%0%</desc> */",
-                header.getContent());
+                result.header.getContent());
 
-        assertEquals(1, header.getAlernatingParts().size());
+        assertEquals(1, result.alternatingParts.size());
 
-        Entry<String, List<String>> part = header.getAlernatingParts().entrySet().iterator().next();
+        Entry<String, List<String>> part = 
+                result.alternatingParts.entrySet().iterator().next();
         assertEquals("desc",part.getKey());
         assertEquals(1, part.getValue().size());
         assertEquals("alternating-tet", part.getValue().iterator().next());

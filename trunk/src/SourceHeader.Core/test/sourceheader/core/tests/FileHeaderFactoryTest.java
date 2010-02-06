@@ -30,12 +30,14 @@ public class FileHeaderFactoryTest {
                 Utils.getParsersConfig(),
                 new HeaderParser[] {
                     new HeaderParser() {
-                        public FileHeader parse(Path path, FileHeaderFactory factory)
+                        public HeaderAndAlternatingParts parse(Path path, FileHeaderFactory factory)
                                 throws IOException {
-                            return new FileHeader(path.getExtension(), '%') {};
+                            HeaderAndAlternatingParts result = new HeaderAndAlternatingParts();
+                            result.header = new FileHeader(path.getExtension(), '%') {};
+                            return result;
                         }
 
-                        public FileHeader parse(Reader reader, FileHeaderFactory factory)
+                        public HeaderAndAlternatingParts parse(Reader reader, FileHeaderFactory factory)
                                 throws IOException {
                             throw new UnsupportedOperationException("Not supported yet.");
                         }
@@ -47,7 +49,7 @@ public class FileHeaderFactoryTest {
             });
 
         // gets header from factory, passing stub Path
-        FileHeader header = 
+        HeaderParser.HeaderAndAlternatingParts result =
                 factory.create(new Path("somepath") {
                                 @Override
                                 public String getExtension() {
@@ -55,7 +57,7 @@ public class FileHeaderFactoryTest {
                                 }
                             });
             
-        assertEquals(extension, header.getContent());
+        assertEquals(extension, result.header.getContent());
     }
 
     /**

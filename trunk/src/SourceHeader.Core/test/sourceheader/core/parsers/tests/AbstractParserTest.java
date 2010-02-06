@@ -34,10 +34,11 @@ public class AbstractParserTest {
                 "\n/*This is really\n\tcute\n\n header****/\n\n\n" +
                 "/*3 new lines should exclude this from header*/\n\n #include;");
 
-        FileHeader header = parser.parse(reader, factory);
+        HeaderParser.HeaderAndAlternatingParts result =
+                parser.parse(reader, factory);
 
         assertEquals("\n\n\t\t  \n/*This is really\n\tcute\n\n header****/",
-                header.getContent());
+                result.header.getContent());
     }
 
     @Test
@@ -53,10 +54,11 @@ public class AbstractParserTest {
                 new StringReader(
                 "\n/*This is another\n *\n *header\n */#include \"xx.hpp\";\n");
 
-        FileHeader header = parser.parse(reader, factory);
+        HeaderParser.HeaderAndAlternatingParts result =
+                parser.parse(reader, factory);
 
         assertEquals("\n/*This is another\n *\n *header\n */",
-                header.getContent());
+                result.header.getContent());
     }
 
     @Test
@@ -73,11 +75,12 @@ public class AbstractParserTest {
                 "// This is \n // header constructed \n " +
                 "// with one line comments \n int global_speed = 8; \n");
 
-        FileHeader header = parser.parse(reader, factory);
+        HeaderParser.HeaderAndAlternatingParts result =
+                parser.parse(reader, factory);
 
         assertEquals("// This is \n // header constructed \n " +
                 "// with one line comments \n",
-                header.getContent());
+                result.header.getContent());
     }
 
     @Test
@@ -94,9 +97,10 @@ public class AbstractParserTest {
                                "* with star comments \n */";
         Reader reader = new StringReader(headerStr);
 
-        FileHeader header = parser.parse(reader, factory);
+        HeaderParser.HeaderAndAlternatingParts result =
+                parser.parse(reader, factory);
 
-        assertEquals(headerStr, header.getContent());
+        assertEquals(headerStr, result.header.getContent());
     }
 
     @Test
@@ -115,7 +119,8 @@ public class AbstractParserTest {
         Reader reader = AbstractParserUtils.getStringReader(headerStr);
 
         try {
-            FileHeader header = parser.parse(reader, factory);
+            HeaderParser.HeaderAndAlternatingParts result =
+                    parser.parse(reader, factory);
             fail("SyntaxErrorException was not thrown.");
         }
         catch (SyntaxErrorException exception) {
@@ -134,8 +139,9 @@ public class AbstractParserTest {
 
         Reader reader = AbstractParserUtils.getStringReader("// One line \n\n");
 
-        FileHeader header = parser.parse(reader, factory);
+        HeaderParser.HeaderAndAlternatingParts result =
+                parser.parse(reader, factory);
 
-        assertEquals("// One line \n", header.getContent());
+        assertEquals("// One line \n", result.header.getContent());
     }
 }

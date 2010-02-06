@@ -77,8 +77,8 @@ public class FilesTreeFactoryTest {
         tree.update();
 
         FileHeaderFactory headersFactory = this.getHeaderFactory();
-        FileHeader header1 = headersFactory.create(this.getCppFilePath());
-        FileHeader header2 = headersFactory.create(this.getHppFilePath());
+        FileHeader header1 = headersFactory.create(this.getCppFilePath()).header;
+        FileHeader header2 = headersFactory.create(this.getHppFilePath()).header;
 
         assertEquals("// New header man \n", header1.getContent());
         assertEquals(header1.getContent(), header2.getContent());

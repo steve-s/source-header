@@ -6,6 +6,9 @@
 package sourceheader.core.parsers;
 
 /**
+ * Class that encapsulates information about block of content.
+ * Block of content consists of startSequence and endSequence,
+ * for example start sequence for comment is / * and endSequence is * /
  *
  * @author steve
  */

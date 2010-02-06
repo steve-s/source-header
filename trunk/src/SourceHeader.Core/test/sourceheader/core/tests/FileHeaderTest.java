@@ -40,7 +40,7 @@ public class FileHeaderTest {
         FileHeader header1 = 
                 new FileHeader("lin1\n line2 \n adsadasd \n", '%') {};
 
-        assertEquals(3, header1.getNewlinesCount());
+        assertEquals(3, header1.getNewlinesCount(new Hashtable<String, List<String>>()));
     }
 
     @Test
@@ -53,11 +53,11 @@ public class FileHeaderTest {
         
         final String headerStr = "/* constant \n" +
                                 " * <description>%description%0%</description>*/";
-        FileHeader header = new FileHeader(headerStr, '%', altData) {};
+        FileHeader header = new FileHeader(headerStr, '%') {};
 
         assertEquals(
                 "/* constant \n * <description>real-value</description>*/",
-                header.getRawContent());
+                header.getRawContent(altData));
     }
 
     @Test
@@ -71,14 +71,13 @@ public class FileHeaderTest {
         final String headerStr = "/* constant \n" +
                 " * <description>%description%1%</description> \n" +
                 " * <description>%description%0%</description> */";
-        FileHeader header = new FileHeader(
-                headerStr, '%', altData) {};
+        FileHeader header = new FileHeader(headerStr, '%') {};
 
         assertEquals(
                 "/* constant \n" +
                 " * <description>real-value2</description> \n" +
                 " * <description>real-value</description> */",
-                header.getRawContent());
+                header.getRawContent(altData));
     }
     
     @Test

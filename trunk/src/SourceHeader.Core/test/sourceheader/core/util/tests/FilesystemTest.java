@@ -70,6 +70,7 @@ public class FilesystemTest {
         assertEquals(2,
                 Filesystem.getFilesCount(
                     TestsConfig.getRootForTests(),
+                    100,
                     new FileFilter() {
                         public boolean accept(File pathname) {
                             return !pathname.isHidden() && 

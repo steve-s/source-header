@@ -5,11 +5,13 @@
 
 package sourceheader.core;
 
-
-import java.io.File;
 import java.util.*;
 
 /**
+ * Represents path on filesystem.
+ *
+ * Wrapper for java.io.File class adds some useful methods
+ * and it's name does not collide with class @link sourceheader.core.File.
  *
  * @author steve
  */
