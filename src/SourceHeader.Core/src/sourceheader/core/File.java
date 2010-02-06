@@ -5,10 +5,12 @@
 
 package sourceheader.core;
 
+import java.util.*;
 import java.io.*;
 import sourceheader.core.util.Filesystem;
 
 /**
+ * Represents file with it's header.
  *
  * @author steve
  */
@@ -17,6 +19,7 @@ public class File {
     private static Path tmpPath = new Path(".");
     private java.io.File tmpFile;
     private java.io.File backupFile;
+    private Map<String, List<String>> alternatingParts;
 
     public static void setTmpPath(Path path) {
         tmpPath = path;
@@ -26,7 +29,17 @@ public class File {
     private FileHeader header;
     private FileHeader lastHeader;
 
-    protected File(Path path, FileHeader header) {
+    /**
+     * File instances are hold in FilesTree and should be created
+     * via FilesTreeFactory.
+     *
+     * @param path Path on filesystem.
+     * @param header Header instance.
+     * @param alternatingParts Real values of alternating parts in header.
+     */
+    protected File(Path path, 
+            FileHeader header,
+            Map<String, List<String>> alternatingParts) {
         this.path = path;
         this.header = header;
         this.lastHeader = new FileHeader(header);
@@ -114,7 +127,7 @@ public class File {
         // I have to skip newlines count + 1, because eg. one line header
         // has no newlines.
         Filesystem.copyText(this.getPath(), this.getTmpFilePath(),
-                this.lastHeader.getNewlinesCount()+1);
+                this.lastHeader.getNewlinesCount(this.alternatingParts)+1);
     }
 
     /**

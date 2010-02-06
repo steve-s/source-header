@@ -12,6 +12,7 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.*;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -60,7 +61,8 @@ public class FileTest {
                 new FileHeader("/* two lines \n header */", '%') {};
         FileHeader oldHeader =
                 new FileHeader("/* This is one line header */", '%') {};
-        File file = new File(this.getFilePath(), oldHeader) {};
+        File file = new File(this.getFilePath(), oldHeader,
+                new HashMap<String, List<String>>()) {};
 
         file.setHeader(newHeader);
         file.update();

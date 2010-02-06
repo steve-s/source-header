@@ -1,7 +1,14 @@
 
 Core:
-	- problem s alternating parts, potreba refactoringu (CRITICAL)
+	- problem s alternating parts, potreba refactoringu (CRITICAL)	(hotovo)
+		- konkretni alternating parts budou patrit tride File
+		- trida file bude poskytovat getRawHeaderContent()
+		- trida Header bude mit getRawHeader(alternatingParts)
+		- potreba provazat HeaderFactory a FileFactory
+		
 	- predelat na nio
+		- locky
+		- lepsi kopirovani souboru
 	
 Gui:
 	- horni panel

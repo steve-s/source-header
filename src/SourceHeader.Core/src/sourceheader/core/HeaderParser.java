@@ -6,17 +6,29 @@
 package sourceheader.core;
 
 import java.io.*;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
  * @author steve
  */
 public interface HeaderParser {
-    FileHeader parse(Path path, FileHeaderFactory factory) 
+    HeaderAndAlternatingParts parse(Path path, FileHeaderFactory factory)
             throws IOException, SyntaxErrorException;
-    FileHeader parse(Reader reader, FileHeaderFactory factory) 
+
+    HeaderAndAlternatingParts parse(Reader reader, FileHeaderFactory factory)
             throws IOException, SyntaxErrorException;
+
     String[] getExtensions();
+
+    /**
+     * Simple messenger encapsulates 2 values - return value of createHeader.
+     */
+    public static class HeaderAndAlternatingParts {
+        public FileHeader header;
+        public Map<String, List<String>> alternatingParts;
+    }
 
     public class SyntaxErrorException extends Exception {
         private Path path = null;

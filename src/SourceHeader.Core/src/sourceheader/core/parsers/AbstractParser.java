@@ -7,9 +7,7 @@ package sourceheader.core.parsers;
 
 import java.io.*;
 import java.util.*;
-import java.util.Hashtable;
 import sourceheader.core.*;
-import sourceheader.core.parsers.Block;
 
 /**
  *
@@ -28,7 +26,7 @@ public abstract class AbstractParser implements HeaderParser {
 
     private Path path;
 
-    public FileHeader parse(Path path, FileHeaderFactory headerFactory)
+    public HeaderAndAlternatingParts parse(Path path, FileHeaderFactory headerFactory)
             throws IOException, SyntaxErrorException {
         this.path = path;
         try {
@@ -39,12 +37,12 @@ public abstract class AbstractParser implements HeaderParser {
         }
     }
 
-    public FileHeader parse(Reader reader, FileHeaderFactory headerFactory) 
+    public HeaderParser.HeaderAndAlternatingParts parse(Reader reader, FileHeaderFactory headerFactory)
             throws IOException, SyntaxErrorException {
         return this.parse(reader, headerFactory, "");
     }
 
-    public FileHeader parse(
+    public HeaderAndAlternatingParts parse(
             Reader reader,
             FileHeaderFactory headerFactory,
             String filename)
@@ -61,7 +59,7 @@ public abstract class AbstractParser implements HeaderParser {
             c = this.skipWitespace(reader, c, whitespace, wasComment, !wasComment);
 
             if (c == ' ') {
-                return headerFactory.create(result.toString(), alternatingPartsContent);
+                break;
             }
 
             // check for comment start
@@ -71,7 +69,7 @@ public abstract class AbstractParser implements HeaderParser {
 
             if (comment == null) {  // this covers even end of file
                 // no comment starts here, we are done.
-                return headerFactory.create(result.toString(), alternatingPartsContent);
+                break;
             }
 
             // we have start of commet in found variable.
@@ -87,7 +85,10 @@ public abstract class AbstractParser implements HeaderParser {
             wasComment = true;
         }
 
-        return headerFactory.create(result.toString(), alternatingPartsContent);
+        HeaderAndAlternatingParts resultMessenger = new HeaderAndAlternatingParts();
+        resultMessenger.header = headerFactory.create(result.toString());
+        resultMessenger.alternatingParts = alternatingPartsContent;
+        return resultMessenger;
     }
 
     private char skipWitespace(
@@ -302,7 +303,7 @@ public abstract class AbstractParser implements HeaderParser {
                 // put the content into list of contents
                 if (!this.parts.containsKey(this.getCurrentPartName())) {
                     this.parts.put(this.getCurrentPartName(),
-                            new Vector<String>());
+                            new ArrayList<String>());
                 }
                 //cut-off block end sequence:
                 this.currentPartContent.setLength(

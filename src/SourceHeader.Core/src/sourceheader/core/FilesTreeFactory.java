@@ -67,7 +67,9 @@ public class FilesTreeFactory {
 
     private File createFile(Path path)
             throws IOException, SyntaxErrorException {
-        return new File(path, this.headerFactory.create(path));
+        HeaderParser.HeaderAndAlternatingParts headerData =
+                this.headerFactory.create(path);
+        return new File(path, headerData.header, headerData.alternatingParts);
     }
 
     private class FoldersAndFiles {
