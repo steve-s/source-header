@@ -8,15 +8,21 @@ package sourceheader.core.parsers;
 import java.util.*;
 
 /**
+ * Holds information about parser configuration that
+ * is specialCharacter used for alternating parts placeholders
+ * and list of supported alternating parts.
  *
  * @author steve
  */
 public class ParsersConfig {
-
     private char specialCharacter;
-
     private Map<String, Block> alternatingParts;
 
+    /**
+     * Creates configuration.
+     * @param specialCharacter
+     * @param alternatingParts
+     */
     public ParsersConfig(char specialCharacter, Map<String, Block> alternatingParts) {
         this.specialCharacter = specialCharacter;
         this.alternatingParts = alternatingParts;
@@ -49,6 +55,10 @@ public class ParsersConfig {
         return null;
     }
 
+    /**
+     * Creates simple, default configuration.
+     * @return Config instance.
+     */
     public static ParsersConfig getDefault() {
         return new ParsersConfig('%');
     }

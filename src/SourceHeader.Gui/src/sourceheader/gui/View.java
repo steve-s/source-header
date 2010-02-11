@@ -7,25 +7,17 @@ package sourceheader.gui;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import sourceheader.gui.util.tree.TreeRootAdapter;
-import sourceheader.gui.util.tree.FilesTreeCellRenderer;
-import sourceheader.gui.util.tree.EmptyTreeRootAdapter;
-import sourceheader.gui.util.tree.CheckTreeManager;
+import java.net.URI;
+import sourceheader.gui.util.tree.*;
 import sourceheader.gui.util.preferences.ApplicationPreferences;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.URI;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
 import sourceheader.core.*;
-import sourceheader.core.ProgressReportConsumer;
 import sourceheader.gui.controller.*;
-import sourceheader.gui.dialogs.AboutDialog;
-import sourceheader.gui.dialogs.PreferencesDialog;
-import sourceheader.gui.util.*;
+import sourceheader.gui.dialogs.*;
 
 /**
  *

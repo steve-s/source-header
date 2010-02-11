@@ -8,14 +8,12 @@ package sourceheader.core.parsers;
 import java.util.Arrays;
 
 /**
- * Php has specific syntax of headers because they must start with
- * '&gt;?php' or '&gt?'.
- *
+ * Parser for xml and similar (html) languages.
+ * 
  * @author steve
  */
-public class PhpParser extends AbstractParser {
-    
-    public PhpParser(ParsersConfig config) {
+public class XmlParser extends AbstractParser {
+    public XmlParser(ParsersConfig config) {
         super(config);
     }
 
@@ -23,11 +21,7 @@ public class PhpParser extends AbstractParser {
     protected Iterable<Block> getCommentBlocks() {
         return Arrays.asList(
             new Block[] {
-                new Block("/*", "*/"),
-                new Block("//", "\n"),
-                new Block("#", "\n"),
-                new Block("<?", ""),
-                new Block("php", "")
+                new Block("<!--", "-->"),
             }
         );
     }
@@ -35,6 +29,6 @@ public class PhpParser extends AbstractParser {
     @Override
     public String[] getExtensions() {
         return new String[] {
-            "php", "php4", "php5", "php6", "php3"};
+            "xml", "xhtml", "html", "htm", "xslt", "xsl", "xsd"};
     }
 }

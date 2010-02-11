@@ -11,6 +11,7 @@ import sourceheader.core.Path;
 import sourceheader.core.ProgressReportConsumer;
 
 /**
+ * Interface of view, trought this interface the controller access the view.
  *
  * @author steve
  */

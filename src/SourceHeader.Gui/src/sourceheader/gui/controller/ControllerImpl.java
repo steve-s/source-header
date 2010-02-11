@@ -27,25 +27,25 @@ public class ControllerImpl implements Controller {
             "/** \n" +
             " * Welcome to SourceHeader!\n" +
             " * \n" +
-            " * This is content of new header. You can change this text and than \n" +
-            " * upload it as new header of selected files or you can prepend or append it to \n" +
+            " * This is content of a new header. You can change this text and than \n" +
+            " * upload it as a new header of selected files or you can prepend or append it to \n" +
             " * all headers of selected files. \n" +
             " * \n" +
             " * When creating header's content you may use variable %filename%.\n" +
             " * There is also concept of alternating blocks:\n" +
             " * These are blocks of content that may vary in the same headers,\n" +
             " * for example javaDoc tag @category might be different, but if all\n" +
-            " * other content is the same SourceHeader will identify such headers as same.\n" +
+            " * other contents are the same, SourceHeader will identify such headers as same.\n" +
             " * Alternating blocks are replaced with %alt-block-name%{number}%.\n" +
             " * \n" +
-            " * Of course you cannot use alternating block which content is not aviable.\n" +
-            " * (in other words: was not extracted from header of existing file).\n" +
+            " * Of course you cannot use an alternating block which content is not aviable.\n" +
+            " * (in other words: it was not extracted from header of existing file).\n" +
             " * This especially means that you cannot use alternating blocks\n" +
-            " * here in new header's content.\n" +
+            " * here in content of new header.\n" +
             " * \n" +
             " * When you update files somehow in program their headers are not again\n" +
             " * parsed for alternating blocks. So it is recommended to open folder again\n" +
-            " * after extensive work with alternating blocks.\n" +
+            " * after an extensive work with alternating blocks.\n" +
             " **/ ";
 
     private final ViewData viewData;

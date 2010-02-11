@@ -21,6 +21,10 @@ public class File {
     private java.io.File backupFile;
     private Map<String, List<String>> alternatingParts;
 
+    /**
+     * Sets the path where tmp files will be created.
+     * @param path
+     */
     public static void setTmpPath(Path path) {
         tmpPath = path;
     }
@@ -46,22 +50,43 @@ public class File {
         this.alternatingParts = alternatingParts;
     }
 
+    /**
+     * @return The filesystem path of this file.
+     */
     public Path getPath() {
         return this.path;
     }
-    
+
+    /**
+     * @return Name of file.
+     */
     public String getName() {
         return this.path.getName();
     }
-    
+
+    /**
+     * @return File extemsion.
+     */
     public String getExtension() {
         return this.path.getExtension();
     }
 
+    /**
+     * @return The header of this file.
+     */
     public FileHeader getHeader() {
         return this.header;
     }
 
+    /**
+     * Sets new header.
+     *
+     * New header must not use any alternating part which content
+     * is not in this.alternatingParts map, otherwise method update
+     * will generate exception.
+     *
+     * @param header
+     */
     public void setHeader(FileHeader header) {
         this.header = header;
     }

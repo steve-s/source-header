@@ -11,10 +11,20 @@ import java.util.Collections;
 import java.util.Stack;
 
 /**
+ * Static class with helper methods that manipulates filesystem.
+ *
  * @author steve
  */
 public class Filesystem {
 
+    /**
+     * Copies text from one file to another.
+     * @param source
+     * @param destination
+     * @param skipLines How many lines from start should be skipped. (For skipping header)
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static void copyText(
             File source, 
             File destination, 
@@ -23,6 +33,15 @@ public class Filesystem {
         copyText(source, destination, skipLines, true);
     }
 
+    /**
+     * Copies text from one file to another.
+     * @param source
+     * @param destination
+     * @param skipLines How many lines from start should be skipped. (For skipping header)
+     * @param append Append (True) text or rewrite (False).
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static void copyText(
             File source,
             File destination,
@@ -55,17 +74,37 @@ public class Filesystem {
         }
     }
 
+    /**
+     * Copies text from one file to another.
+     * @param source
+     * @param destination
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
     public static void copyText(File source, File destination) 
             throws FileNotFoundException, IOException {
         copyText(source, destination, 0);
     }
 
+    /**
+     * Deletes text from given file.
+     * @param file
+     * @throws IOException
+     */
     public static void deleteText(File file) throws IOException {
         BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
         writer.write("", 0, 0);
         writer.close();
     }
 
+    /**
+     * Counts files in given folder and it's subfolders.
+     * @param file Folder
+     * @param maxCount Maximal count of files, if the counter reaches this number
+     * method returns maxCount and does not count more.
+     * @param fileFilter
+     * @return Count of files if lower than maxCount, otherwise maxCount.
+     */
     public static long getFilesCount(File file, long maxCount, FileFilter fileFilter)
     {
         if (file.isFile()) {

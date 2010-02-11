@@ -9,6 +9,7 @@ import org.junit.Test;
 import sourceheader.core.*;
 import java.util.*;
 import static org.junit.Assert.*;
+import sourceheader.core.FileHeader.ContentSyntaxErrorException;
 
 /**
  *
@@ -36,7 +37,7 @@ public class FileHeaderTest {
     }
 
     @Test
-    public void test_getNewlinesCount() {
+    public void test_getNewlinesCount() throws ContentSyntaxErrorException {
         FileHeader header1 = 
                 new FileHeader("lin1\n line2 \n adsadasd \n", '%') {};
 
@@ -44,7 +45,7 @@ public class FileHeaderTest {
     }
 
     @Test
-    public void test_getRawContent_replaces_back_alternating_parts() {
+    public void test_getRawContent_replaces_back_alternating_parts() throws ContentSyntaxErrorException {
 
         Map<String, List<String>> altData = new HashMap<String, List<String>>();
         List<String> value = new Vector<String>();
@@ -61,7 +62,7 @@ public class FileHeaderTest {
     }
 
     @Test
-    public void tets_getRawContent_replaces_two_block_with_same_id_correctly() {
+    public void tets_getRawContent_replaces_two_block_with_same_id_correctly() throws ContentSyntaxErrorException {
         Map<String, List<String>> altData = new HashMap<String, List<String>>();
         List<String> value = new Vector<String>();
         value.add("real-value");

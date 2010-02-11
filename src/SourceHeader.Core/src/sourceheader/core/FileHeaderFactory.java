@@ -11,6 +11,10 @@ import sourceheader.core.HeaderParser.SyntaxErrorException;
 import sourceheader.core.parsers.*;
 
 /**
+ * FileHeader instances should be created via this factory.
+ * 
+ * This factory caches instances of same header and chooses
+ * correct HeaderParser according to file extension.
  *
  * @author steve
  */
@@ -20,27 +24,37 @@ public class FileHeaderFactory {
     private Map<String, FileHeader> headers = new HashMap<String, FileHeader>();
     private ParsersConfig config;
 
+    /**
+     * Initializes factory with one sample parser.
+     * @param config Parsing configuration.
+     */
     public FileHeaderFactory(ParsersConfig config) {
         this.config = config;
         this.parsers = new ArrayList<HeaderParser>();
 
         this.parsers.add(new CppParser(config));
-        /*this.parsers.add(new ScriptsParser(config));
-        this.parsers.add(new PhpParser(config));*/
     }
 
+    /**
+     * Initializes factory.
+     * @param config Parsing configuration.
+     * @param parsers List of parsers for different file extensions.
+     */
     public FileHeaderFactory(ParsersConfig config, HeaderParser[] parsers) {
         this.config = config;
         this.parsers = new ArrayList<HeaderParser>(Arrays.asList(parsers));
     }
 
+    /**
+     * @return List of all headers that have been created trought this factory.
+     */
     public Iterable<FileHeader> getFileHeaders() {
         return (Iterable<FileHeader>)this.headers.values();
     }
 
     /**
      * Creates header only from content where alternating parts
-     * should be already replace with special sequences.
+     * should be already replaced with special sequences.
      *
      * @param content Content of file header.
      * @return FileHeader instance that corresponds to given content.
@@ -70,7 +84,7 @@ public class FileHeaderFactory {
     /**
      * Extracts header from given file and creates
      * @link sourceheader.core#FileHeader FileHeader class instance for it
-     * and map of real values for alternating parts.
+     * and also creates map of real values for alternating parts.
      *
      * Ensures that for equal headers the same instances will be returned.
      *
@@ -95,6 +109,11 @@ public class FileHeaderFactory {
         // is done there.
     }
 
+    /**
+     * Internal helper method.
+     * @param path
+     * @return Parser for file on given path.
+     */
     private HeaderParser findParserFor(Path path) {
         for (HeaderParser parser : this.parsers) {
             for (String extension : parser.getExtensions()) {
