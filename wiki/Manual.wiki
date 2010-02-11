@@ -1,0 +1,5 @@
+#summary Provides basic information about SourceHeader usage.
+
+= Manual =
+
+Manual is under construction. Sorry.
