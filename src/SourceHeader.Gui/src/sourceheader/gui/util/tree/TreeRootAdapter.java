@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package sourceheader.gui.util;
+package sourceheader.gui.util.tree;
 
 import javax.swing.tree.*;
 import sourceheader.core.*;

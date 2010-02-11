@@ -70,7 +70,8 @@ public class FileHeader {
      * @return Content of header where all special sequences for
      * alternating parts are replaced with their real content.
      */
-    public String getRawContent(Map<String, List<String>> alernatingParts) {
+    public String getRawContent(Map<String, List<String>> alernatingParts,
+            String filename) throws ContentSyntaxErrorException {
         StringBuilder result = new StringBuilder();
 
         StringTokenizer tokenizer =
@@ -84,14 +85,33 @@ public class FileHeader {
 
             if (tokenizer.hasMoreTokens()) {
                 String name = tokenizer.nextToken();
-                assert tokenizer.hasMoreTokens() : "There must be number after id";
-                int number = Integer.parseInt(tokenizer.nextToken());
+                if (name.equals("filename")) {
+                    result.append(filename);                    
+                }
+                else {
+                    assert tokenizer.hasMoreTokens() : "There must be number after id";
+                    int number = Integer.parseInt(tokenizer.nextToken());
 
-                result.append(alernatingParts.get(name).get(number));
+                    List<String> values = alernatingParts.get(name);
+                    if (values == null) {
+                        throw new ContentSyntaxErrorException();
+                    }
+
+                    if (number >= values.size() || number < 0) {
+                        throw new ContentSyntaxErrorException();
+                    }
+
+                    result.append(values.get(number));
+                }
             }
         }
 
         return result.toString();
+    }
+
+    public String getRawContent(Map<String, List<String>> alernatingParts)
+            throws ContentSyntaxErrorException {
+        return this.getRawContent(alernatingParts, "");
     }
 
     /**
@@ -106,7 +126,8 @@ public class FileHeader {
      * Helper function for classes that writes header in some file.
      * @return Count of \n characters in header
      */
-    public int getNewlinesCount(Map<String, List<String>> alternatingParts) {
+    public int getNewlinesCount(Map<String, List<String>> alternatingParts)
+        throws ContentSyntaxErrorException {
         String rawContent = this.getRawContent(alternatingParts);
         int fromIndex = 0;
         int count = -1;
@@ -158,5 +179,8 @@ public class FileHeader {
     @Override
     public int hashCode() {
         return this.content.hashCode();
+    }
+
+    public static class ContentSyntaxErrorException extends Exception {
     }
 }

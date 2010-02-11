@@ -86,9 +86,19 @@ public abstract class AbstractParser implements HeaderParser {
         }
 
         HeaderAndAlternatingParts resultMessenger = new HeaderAndAlternatingParts();
-        resultMessenger.header = headerFactory.create(result.toString());
+        resultMessenger.header = headerFactory.create(
+                this.createHeaderHook(result.toString()));
         resultMessenger.alternatingParts = alternatingPartsContent;
         return resultMessenger;
+    }
+
+    /**
+     * Hook point for changing header content before it is created via factory.
+     * @param content Content parsed from file/reader.
+     * @return New content, default implementation return the same content.
+     */
+    protected String createHeaderHook(String content) {
+        return content;
     }
 
     private char skipWitespace(
@@ -98,9 +108,7 @@ public abstract class AbstractParser implements HeaderParser {
             boolean checkForDoubleNewlines,
             boolean ignorePreviousOutput) throws IOException {
 
-            // last character from whitespace is anyway removed so
-            // we dont have to check, if previousInput is white
-            if (!ignorePreviousOutput) {
+            if (!ignorePreviousOutput && Character.isWhitespace(previousInput)) {
                 whitespace.append(previousInput);
             }
 
@@ -122,7 +130,13 @@ public abstract class AbstractParser implements HeaderParser {
                 }
                 firstNewline = c == '\n';
             }
-            whitespace.setLength(whitespace.length()-1); // last char is not white
+
+            // Last character needn't to be non-white, when loop is not proced
+            // and first if is positive in method.
+            if (whitespace.length() > 0 &&
+                !Character.isWhitespace(whitespace.charAt(whitespace.length()-1))) {
+                whitespace.setLength(whitespace.length()-1); // last char is not white
+            }
 
             return c;
     }

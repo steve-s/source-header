@@ -43,6 +43,7 @@ public class File {
         this.path = path;
         this.header = header;
         this.lastHeader = new FileHeader(header);
+        this.alternatingParts = alternatingParts;
     }
 
     public Path getPath() {
@@ -69,7 +70,7 @@ public class File {
      * Updates data to physical file on filesystem.
      */
     public void update() throws BackupCannotBeCareatedException,
-            FileCannotBeUpdateException {
+            FileCannotBeUpdateException, FileHeader.ContentSyntaxErrorException {
         if (this.lastHeader.equals(this.header)) {
             return;
         }
@@ -119,7 +120,7 @@ public class File {
      * via this.getHeader() and other content from filesystem.
      */
     private void crateTmpFileWithNewContent()
-            throws FileNotFoundException, IOException {        
+            throws FileNotFoundException, IOException, FileHeader.ContentSyntaxErrorException {
         this.tmpFile =
                 java.io.File.createTempFile(this.getTmpFilename(), "new");
         this.copyHeaderTo(this.getTmpFilePath());
@@ -170,11 +171,13 @@ public class File {
      * @param path
      * @throws IOException
      */
-    private void copyHeaderTo(java.io.File path) throws IOException {
+    private void copyHeaderTo(java.io.File path) 
+            throws IOException, FileHeader.ContentSyntaxErrorException {
         BufferedWriter writer = null;
         try {
             writer = new BufferedWriter(new FileWriter(path, false));
-            writer.write(this.getHeader().getContent());
+            writer.write(this.getHeader().getRawContent(this.alternatingParts,
+                    this.getPath().getName()));
             writer.write('\n');
         }
         finally {

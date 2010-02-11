@@ -1,30 +1,22 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This file is part of SourceHeader project.
+ * licence: FreeBSD licence.
+ *
+ * @category Gui
+ *
+ * file: View.java
  */
 
 package sourceheader.gui;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import sourceheader.gui.util.tree.TreeRootAdapter;
-import sourceheader.gui.util.tree.FilesTreeCellRenderer;
-import sourceheader.gui.util.tree.EmptyTreeRootAdapter;
-import sourceheader.gui.util.tree.CheckTreeManager;
-import sourceheader.gui.util.preferences.ApplicationPreferences;
 import java.awt.*;
 import java.awt.event.*;
-import java.net.URI;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
 import sourceheader.core.*;
 import sourceheader.core.ProgressReportConsumer;
 import sourceheader.gui.controller.*;
-import sourceheader.gui.dialogs.AboutDialog;
-import sourceheader.gui.dialogs.PreferencesDialog;
 import sourceheader.gui.util.*;
 
 /**
@@ -43,35 +35,18 @@ public class View extends JFrame
     private final JLabel statusLabel = new JLabel("");
     private final JProgressBar progressBar = new JProgressBar(0,10000);
     private JButton saveButton = new JButton("Update changes");
-    private CheckTreeManager checkTreeManager;
     private final ViewData viewData;
 
     public View() {
         super("Source header v0.1");
-        this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                if (View.this.controller.isWorking()) {
-                    int result = JOptionPane.showConfirmDialog(
-                                        View.this,
-                                        "There is operation that is not complete. Are you sure to close application?",
-                                        "Operation is not complete.",
-                                        JOptionPane.YES_NO_CANCEL_OPTION);
-                    if (result != JOptionPane.YES_OPTION) {
-                        return;
-                    }
-                }
-                dispose();
-            }        
-        });
+        this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {}
         this.setLayout(new BorderLayout(10, 3));
 
         this.viewData = new ViewData();
-        this.controller = new ControllerImpl(this.viewData, this, this.preferences);
+        this.controller = new ControllerImpl(this.viewData, this);
         this.viewData.setObserver(this);
 
         this.setSize(this.preferences.getWindowWidth(),
@@ -101,8 +76,6 @@ public class View extends JFrame
         this.filesTree.setBorder(BorderFactory.createEmptyBorder(10, 3, 3, 3));
         this.filesTree.setCellRenderer(new FilesTreeCellRenderer());
         this.filesTree.addTreeSelectionListener(new FilesTreeSelectionListener());
-        this.checkTreeManager = new CheckTreeManager(this.filesTree);
-
         JScrollPane scrollPane = new JScrollPane(this.filesTree,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -165,18 +138,7 @@ public class View extends JFrame
 
     private JComponent initRightContentPanel() {
         String text = this.viewData.getNewHeader().getContent();
-        this.newHeaderTextArea.setText(text);
-
-        JScrollPane newHeaderScrollPane = new JScrollPane(
-                this.newHeaderTextArea,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        this.newHeaderTextArea.setCaretPosition(0);
-
-        JScrollPane currentHeaderScrollPane = new JScrollPane(
-                this.currentHeaderTextArea,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        this.newHeaderTextArea.setText(text); 
 
         final JTabbedPane pane = new JTabbedPane();
         pane.addChangeListener(new ChangeListener() {
@@ -185,8 +147,8 @@ public class View extends JFrame
                 View.this.saveButton.setEnabled(!View.this.viewData.isNewHeaderVisible());
             }
         });
-        pane.add("Selected header", currentHeaderScrollPane);
-        pane.add("New header", newHeaderScrollPane);
+        pane.add("Selected header", this.currentHeaderTextArea);
+        pane.add("New header", this.newHeaderTextArea);
         pane.setSelectedIndex(1);
         return pane;
     }
@@ -212,42 +174,13 @@ public class View extends JFrame
                 View.this.dispose();
             }
         });
-        JMenuItem prefs = new JMenuItem("Preferences");
-        prefs.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JDialog dialog = new PreferencesDialog(View.this, View.this.preferences);
-            }
-        });
 
         JMenu fileMenu = new JMenu("File");
         fileMenu.add(open);
-        fileMenu.add(prefs);
         fileMenu.add(end);
 
         JMenuItem about = new JMenuItem("About");
-        about.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                JDialog dialog = new AboutDialog(View.this);
-            }
-        });
         JMenuItem help = new JMenuItem("Help");
-        help.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (!Desktop.isDesktopSupported() ||
-                    !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                    View.this.warningDialog(
-                            "Your desktor does not support browse url. " +
-                            "Manual can be found at http://code.google.com/p/source-header/wiki/Manual.",
-                            "Browse not supported");
-                }
-                else {
-                    try {
-                            Desktop.getDesktop().browse(new URI("http://code.google.com/p/source-header/wiki/Manual"));
-                    } catch (IOException ex) {}
-                    catch (URISyntaxException ex) {}
-                }
-            }
-        });
 
         JMenu helpMenu = new JMenu("Help");
         helpMenu.add(about);
@@ -297,14 +230,6 @@ public class View extends JFrame
         });
     }
 
-    public void updateTree() {
-        this.runSafely(new Runnable() {
-            public void run() {
-                View.this.filesTree.repaint();
-            }
-        });
-    }
-
     public ProgressReportConsumer getProgressReportConsumer() {
         return new ProgressReportConsumer() {
             public void progress() {
@@ -337,21 +262,6 @@ public class View extends JFrame
         return this.newHeaderTextArea.getText();
     }
 
-    public java.util.List<File> getSelectedFiles() {
-        TreePath[] paths = this.checkTreeManager.getSelectionModel().getSelectionPaths();
-        java.util.List<File> result = new java.util.ArrayList<File>();
-
-        for (TreePath path : paths) {
-            Object obj = path.getLastPathComponent();
-            if (obj instanceof DefaultMutableTreeNode) {
-                if (((DefaultMutableTreeNode)obj).getUserObject() instanceof File) {
-                    result.add((File)((DefaultMutableTreeNode)obj).getUserObject());
-                }
-            }
-        }
-        return result;
-    }
-
     // ------------------------------------------------------------ //
     // ----------------- Observation of ViewData ------------------ //
 
@@ -371,7 +281,6 @@ public class View extends JFrame
                     new DefaultTreeModel(
                         new TreeRootAdapter(View.this.viewData.getFilesTree())));
                 View.this.filesTree.setCellRenderer(new FilesTreeCellRenderer());
-                View.this.checkTreeManager = new CheckTreeManager(filesTree);
             }
         });
     }
@@ -429,7 +338,7 @@ public class View extends JFrame
 
     private class PrependHeaderListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            View.this.controller.prependHeaderButtonClicked();
+            //View.this.controller.
         }
     }
 
@@ -437,7 +346,6 @@ public class View extends JFrame
     public void dispose() {
         this.preferences.updateWindowPreferences(this);
         this.preferences.setSplitPaneDividerPosition(this.splitPane.getDividerLocation());
-        this.controller.stopWorking();
         super.dispose();
     }
 }

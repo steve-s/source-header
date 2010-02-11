@@ -31,13 +31,18 @@ public class FilesTreeFactory {
         this.fileFilter = filter;
     }
 
-    public FilesTree create(Path path)
+    public FilesTree create(Path path, ProgressReportConsumer progress)
             throws IOException, SyntaxErrorException {
-        FoldersAndFiles data = this.extractFolder(path);
-        return new FilesTree(path, data.files, data.folders, this.headerFactory);
+        FoldersAndFiles data = this.extractFolder(path, progress);
+        FilesTree result =
+                new FilesTree(path, data.files, data.folders, this.headerFactory);
+        if (progress != null) {
+            progress.done();
+        }
+        return result;
     }
 
-    private FoldersAndFiles extractFolder(Path path)
+    private FoldersAndFiles extractFolder(Path path, ProgressReportConsumer progress)
             throws IOException, SyntaxErrorException {
         FoldersAndFiles result = new FoldersAndFiles();
 
@@ -45,9 +50,13 @@ public class FilesTreeFactory {
             if (!this.fileFilter.accept(child)) {
                 continue;
             }
+
+            if (progress != null) {
+                progress.progress();
+            }
             
             if (child.isDirectory()) {
-                Folder folder = this.createFolder(child);
+                Folder folder = this.createFolder(child, progress);
                 result.folders.add(folder);
             }
             else if (child.isFile() && 
@@ -59,9 +68,9 @@ public class FilesTreeFactory {
         return result;
     }
 
-    private Folder createFolder(Path path) 
+    private Folder createFolder(Path path, ProgressReportConsumer progress)
             throws IOException, SyntaxErrorException {
-        FoldersAndFiles data = this.extractFolder(path);
+        FoldersAndFiles data = this.extractFolder(path, progress);
         return new Folder(path, data.files, data.folders);
     }
 

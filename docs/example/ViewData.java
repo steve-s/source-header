@@ -1,6 +1,10 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This file is part of SourceHeader project.
+ * licence: FreeBSD licence.
+ *
+ * @category Gui
+ *
+ * file: ViewData.java
  */
 
 package sourceheader.gui;

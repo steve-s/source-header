@@ -3,8 +3,9 @@
  * and open the template in the editor.
  */
 
-package sourceheader.gui.util;
+package sourceheader.gui.util.tree;
 
+import sourceheader.gui.util.*;
 import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
@@ -18,16 +19,6 @@ import sourceheader.core.FileHeader;
  * @author steve
  */
 public class FilesTreeCellRenderer implements TreeCellRenderer {
-    private Dictionary<FileHeader, Color> headerColors = new Hashtable<FileHeader, Color>();
-    private final java.util.List<Color> colorsList =
-            new ArrayList<Color>() {
-                {
-                    add(Color.RED);
-                    add(Color.BLUE);
-                    add(Color.YELLOW);
-                    add(Color.GREEN);
-                }};
-
     private Icon getLeafIcon() {
         Icon icon = UIManager.getIcon("Tree.leafIcon");
         return icon;
@@ -48,34 +39,19 @@ public class FilesTreeCellRenderer implements TreeCellRenderer {
             boolean expanded,
             boolean leaf,
             int row,
-            boolean hasFocus) {        
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, 2));
-
-        JCheckBox checkBox = new JCheckBox();
-        panel.add(checkBox);
+            boolean hasFocus) {
 
         JLabel label = new JLabel(value.toString());
-        panel.add(label);
 
+        Icon leafIcon = this.getOpenIcon();
         if (value instanceof DefaultMutableTreeNode &&
             ((DefaultMutableTreeNode)value).getUserObject() instanceof File) {
             File file = (File)((DefaultMutableTreeNode)value).getUserObject();
-
-            Color color = this.headerColors.get(file.getHeader());
-            if (color == null && this.colorsList.size() > 0) {
-                color = this.colorsList.get(this.colorsList.size()-1);
-                this.colorsList.remove(color);
-                this.headerColors.put(file.getHeader(), color);
-            }
-
-            if (color != null) {
-                label.setForeground(color);
-            }
+            leafIcon = ColorsMap.getInstance().getIconForHeader(file.getHeader());
         }
 
         if (leaf) {
-            label.setIcon(this.getLeafIcon());
+            label.setIcon(leafIcon);
         }
         else if (expanded) {
             label.setIcon(this.getOpenIcon());
@@ -84,7 +60,6 @@ public class FilesTreeCellRenderer implements TreeCellRenderer {
             label.setIcon(this.getClosedIcon());
         }
 
-        return panel;
+        return label;
     }
-
 }

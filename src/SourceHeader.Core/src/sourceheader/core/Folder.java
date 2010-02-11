@@ -41,16 +41,27 @@ public class Folder {
      * @throws sourceheader.core.File.BackupCannotBeCareatedException
      * @throws sourceheader.core.File.FileCannotBeUpdateException
      */
-    public void update()
+    public void update(ProgressReportConsumer progress)
             throws BackupCannotBeCareatedException,
-            FileCannotBeUpdateException {
+            FileCannotBeUpdateException,
+            FileHeader.ContentSyntaxErrorException{
         for(File file : this.files) {
+            if (progress != null) {
+                progress.progress();
+            }
+            
             file.update();
         }
 
         for(Folder folder : this.folders) {
-            folder.update();
+            folder.update(progress);
         }
+    }
+
+    public void update()
+            throws BackupCannotBeCareatedException, FileCannotBeUpdateException,
+            FileHeader.ContentSyntaxErrorException {
+        this.update(null);
     }
 
     /**

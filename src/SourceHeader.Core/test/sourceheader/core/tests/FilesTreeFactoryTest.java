@@ -32,6 +32,16 @@ public class FilesTreeFactoryTest {
             "/*\n" +
             " * To change this template, choose Tools | Templates\n" +
             " * and open the template in the editor.\n" +
+            " * <description>alt-part</description> \n" +
+            " * @category MyCat \n" +
+            " */";
+
+    final String classHeaderParsed =
+            "/*\n" +
+            " * To change this template, choose Tools | Templates\n" +
+            " * and open the template in the editor.\n" +
+            " * <description>%desc%0%</description> \n" +
+            " * @category%cat%0%\n" +
             " */";
 
     @Before
@@ -66,7 +76,7 @@ public class FilesTreeFactoryTest {
         FilesTreeFactory factory =
                 new FilesTreeFactory(this.getHeaderFactory());
 
-        FilesTree tree = factory.create(this.getTestDirPath());
+        FilesTree tree = factory.create(this.getTestDirPath(), null);
 
         File clazz = tree.getFolders()
                 .iterator().next()
@@ -90,7 +100,7 @@ public class FilesTreeFactoryTest {
         FilesTreeFactory factory =
                 new FilesTreeFactory(this.getHeaderFactory());
 
-        FilesTree tree = factory.create(this.getTestDirPath());
+        FilesTree tree = factory.create(this.getTestDirPath(), null);
 
         assertEquals(1, this.getCount(tree.getFiles()));
         File file = tree.getFiles().iterator().next();
@@ -115,11 +125,11 @@ public class FilesTreeFactoryTest {
 
         assertNotNull(cpp);
         assertEquals("class.cpp", cpp.getName());
-        assertEquals(classHeader, cpp.getHeader().getContent());
+        assertEquals(classHeaderParsed, cpp.getHeader().getContent());
 
         assertNotNull(hpp);
         assertEquals("class.h", hpp.getName());
-        assertEquals(classHeader, hpp.getHeader().getContent());
+        assertEquals(classHeaderParsed, hpp.getHeader().getContent());
 
         assertSame(hpp.getHeader(), cpp.getHeader());
     }
