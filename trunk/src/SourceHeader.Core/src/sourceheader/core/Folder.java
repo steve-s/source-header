@@ -9,6 +9,8 @@ import sourceheader.core.File.BackupCannotBeCareatedException;
 import sourceheader.core.File.FileCannotBeUpdateException;
 
 /**
+ * Represents folder, it's subfolders and files.
+ *
  * @author steve
  */
 public class Folder {
@@ -37,7 +39,8 @@ public class Folder {
     }
 
     /**
-     * Updates content of all files and files in subfolders.
+     * Updates headers of child files to filesystem.
+     * @param progress Progress listener.
      * @throws sourceheader.core.File.BackupCannotBeCareatedException
      * @throws sourceheader.core.File.FileCannotBeUpdateException
      */
@@ -58,6 +61,12 @@ public class Folder {
         }
     }
 
+    /**
+     * Updates headers of child files to filesystem.
+     * @throws sourceheader.core.File.BackupCannotBeCareatedException
+     * @throws sourceheader.core.File.FileCannotBeUpdateException
+     * @throws sourceheader.core.FileHeader.ContentSyntaxErrorException
+     */
     public void update()
             throws BackupCannotBeCareatedException, FileCannotBeUpdateException,
             FileHeader.ContentSyntaxErrorException {

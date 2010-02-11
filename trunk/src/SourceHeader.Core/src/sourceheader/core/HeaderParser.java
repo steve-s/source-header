@@ -10,16 +10,39 @@ import java.util.List;
 import java.util.Map;
 
 /**
+ * Interface for parser that extracts header from source file.
  *
  * @author steve
  */
 public interface HeaderParser {
+
+    /**
+     * Parses source file with given path.
+     * @param path File's path.
+     * @param factory Factory for header creation.
+     * @return Instance of class that ecapsulates header instance and map of
+     * content of alternating parts.
+     * @throws IOException
+     * @throws sourceheader.core.HeaderParser.SyntaxErrorException
+     */
     HeaderAndAlternatingParts parse(Path path, FileHeaderFactory factory)
             throws IOException, SyntaxErrorException;
 
+    /**
+     * Parses source from reader.
+     * @param reader
+     * @param factory Factory for header creation.
+     * @return Instance of class that ecapsulates header instance and map of
+     * content of alternating parts.
+     * @throws IOException
+     * @throws sourceheader.core.HeaderParser.SyntaxErrorException
+     */
     HeaderAndAlternatingParts parse(Reader reader, FileHeaderFactory factory)
             throws IOException, SyntaxErrorException;
 
+    /**
+     * @return List of file extensions supported by parser.
+     */
     String[] getExtensions();
 
     /**
@@ -30,6 +53,9 @@ public interface HeaderParser {
         public Map<String, List<String>> alternatingParts;
     }
 
+    /**
+     * Parser may find systax error in source code.
+     */
     public class SyntaxErrorException extends Exception {
         private Path path = null;
 

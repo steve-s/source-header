@@ -8,6 +8,9 @@ package sourceheader.core.parsers;
 import java.util.*;
 
 /**
+ * Parser for programming languages with C-style syntax.
+ * For those languages that support even hash (#) comments
+ * there is ScriptParser.
  *
  * @author steve
  */

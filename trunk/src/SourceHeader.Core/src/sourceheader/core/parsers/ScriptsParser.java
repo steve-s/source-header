@@ -8,6 +8,7 @@ package sourceheader.core.parsers;
 import java.util.Arrays;
 
 /**
+ * Parser for languages that support C-style comments and hash (#) comments.
  *
  * @author steve
  */

@@ -11,8 +11,8 @@ import sourceheader.core.File.FileCannotBeUpdateException;
 /**
  * Root of files and their headers.
  * 
- * Instance can be created by factory method that
- * creates instances of related classes.
+ * Instance should be created by factory method of FilesTreeFactory.
+ * It will create whole graph of instances representing the tree.
  *
  * @author steve
  */
@@ -29,17 +29,14 @@ public class FilesTree extends Folder {
         this.path = path;
     }
 
-    /*public Iterable<File> getFiles() {
-        List<File> result = new Vector<File>();
-
-        for (Folder folder : this.folders) {
-
-            result.addAll((Collection<File>)folder.getFiles());
-        }
-
-        return (Iterable<File>)result;
-    }*/
-
+    /**
+     * Updates headers physicaly on filesystem.
+     * 
+     * @param progress Progress listener, may be null.
+     * @throws sourceheader.core.File.BackupCannotBeCareatedException
+     * @throws sourceheader.core.File.FileCannotBeUpdateException
+     * @throws sourceheader.core.FileHeader.ContentSyntaxErrorException
+     */
     @Override
     public void update(ProgressReportConsumer progress)
             throws BackupCannotBeCareatedException, FileCannotBeUpdateException,
@@ -50,6 +47,9 @@ public class FilesTree extends Folder {
             }
     }
 
+    /**
+     * @return All headers that 'live' within this container.
+     */
     public Iterable<FileHeader> getFileHeaders() {
         return this.headerFactory.getFileHeaders();
     }    

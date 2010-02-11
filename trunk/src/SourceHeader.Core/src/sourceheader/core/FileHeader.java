@@ -67,6 +67,8 @@ public class FileHeader {
     }
 
     /**
+     * @param alernatingParts Content of alternating parts.
+     * @param filename Content for special alternating part %filename%.
      * @return Content of header where all special sequences for
      * alternating parts are replaced with their real content.
      */
@@ -109,6 +111,13 @@ public class FileHeader {
         return result.toString();
     }
 
+    /**
+     * Calls getRawContent with empty filename.
+     * @param alernatingParts Content of alternating parts.
+     * @return Content of header where all special sequences for
+     * alternating parts are replaced with their real content.
+     * @throws sourceheader.core.FileHeader.ContentSyntaxErrorException
+     */
     public String getRawContent(Map<String, List<String>> alernatingParts)
             throws ContentSyntaxErrorException {
         return this.getRawContent(alernatingParts, "");

@@ -19,6 +19,7 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import sourceheader.core.File.BackupCannotBeCareatedException;
 import sourceheader.core.File.FileCannotBeUpdateException;
+import sourceheader.core.FileHeader.ContentSyntaxErrorException;
 
 /**
  *
@@ -55,7 +56,8 @@ public class FileTest {
             throws BackupCannotBeCareatedException,
             FileCannotBeUpdateException,
             FileNotFoundException,
-            IOException {
+            IOException,
+            ContentSyntaxErrorException {
         
         FileHeader newHeader =
                 new FileHeader("/* two lines \n header */", '%') {};

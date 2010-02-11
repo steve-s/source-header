@@ -12,6 +12,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import sourceheader.core.*;
+import sourceheader.core.File.BackupCannotBeCareatedException;
+import sourceheader.core.File.FileCannotBeUpdateException;
+import sourceheader.core.FileHeader.ContentSyntaxErrorException;
 import sourceheader.core.HeaderParser.SyntaxErrorException;
 import sourceheader.core.parsers.*;
 import static org.junit.Assert.*;
@@ -72,7 +75,12 @@ public class FilesTreeFactoryTest {
     }
 
     @Test
-    public void tets_change_the_tree() throws IOException, SyntaxErrorException {
+    public void tets_change_the_tree() 
+            throws IOException,
+            SyntaxErrorException,
+            BackupCannotBeCareatedException,
+            FileCannotBeUpdateException,
+            ContentSyntaxErrorException {
         FilesTreeFactory factory =
                 new FilesTreeFactory(this.getHeaderFactory());
 
