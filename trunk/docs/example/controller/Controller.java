@@ -1,8 +1,12 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This file is part of SourceHeader project.
+ * licence: FreeBSD licence.
+ *
+ * @category Controller
+ *
+ * file: Controller.java
  */
-
+ 
 package sourceheader.gui.controller;
 
 import sourceheader.core.FileHeader;
@@ -18,6 +22,4 @@ public interface Controller {
     void uploadHeaderButtonClicked();
     void appendHeaderButtonClicked();
     void prependHeaderButtonClicked();
-    boolean isWorking();
-    void stopWorking();
 }

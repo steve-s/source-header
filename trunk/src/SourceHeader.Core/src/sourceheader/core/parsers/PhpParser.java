@@ -11,9 +11,9 @@ import java.util.Arrays;
  *
  * @author steve
  */
-public class ScriptsParser extends AbstractParser {
-
-    public ScriptsParser(ParsersConfig config) {
+public class PhpParser extends AbstractParser {
+    
+    public PhpParser(ParsersConfig config) {
         super(config);
     }
 
@@ -23,7 +23,9 @@ public class ScriptsParser extends AbstractParser {
             new Block[] {
                 new Block("/*", "*/"),
                 new Block("//", "\n"),
-                new Block("#", "\n")
+                new Block("#", "\n"),
+                new Block("<?", ""),
+                new Block("php", "")
             }
         );
     }
@@ -31,7 +33,6 @@ public class ScriptsParser extends AbstractParser {
     @Override
     public String[] getExtensions() {
         return new String[] {
-            "sh", "bash",
-            "js"};
+            "php", "php4", "php5", "php6", "php3"};
     }
 }

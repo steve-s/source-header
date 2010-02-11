@@ -1,12 +1,14 @@
 /*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+ * This file is part of SourceHeader project.
+ * licence: FreeBSD licence.
+ *
+ * @category Gui
+ *
+ * file: IView.java
  */
 
 package sourceheader.gui;
 
-import java.util.List;
-import sourceheader.core.File;
 import sourceheader.core.Path;
 import sourceheader.core.ProgressReportConsumer;
 
@@ -18,11 +20,9 @@ public interface IView {
     Path getPathFromUser();
     void warningDialog(String content, String title);
     boolean questionDialog(String content, String title);
-    void updateTree();
 
     String getCurrentHeaderContent();
     String getNewHeaderContent();
-    List<File> getSelectedFiles();
 
     void setStatusText(String text);
     ProgressReportConsumer getProgressReportConsumer();

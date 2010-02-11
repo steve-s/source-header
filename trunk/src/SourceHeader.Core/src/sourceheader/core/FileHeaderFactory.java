@@ -25,6 +25,8 @@ public class FileHeaderFactory {
         this.parsers = new ArrayList<HeaderParser>();
 
         this.parsers.add(new CppParser(config));
+        /*this.parsers.add(new ScriptsParser(config));
+        this.parsers.add(new PhpParser(config));*/
     }
 
     public FileHeaderFactory(ParsersConfig config, HeaderParser[] parsers) {

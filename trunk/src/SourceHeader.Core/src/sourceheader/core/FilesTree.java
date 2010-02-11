@@ -5,6 +5,9 @@
 
 package sourceheader.core;
 
+import sourceheader.core.File.BackupCannotBeCareatedException;
+import sourceheader.core.File.FileCannotBeUpdateException;
+
 /**
  * Root of files and their headers.
  * 
@@ -36,6 +39,16 @@ public class FilesTree extends Folder {
 
         return (Iterable<File>)result;
     }*/
+
+    @Override
+    public void update(ProgressReportConsumer progress)
+            throws BackupCannotBeCareatedException, FileCannotBeUpdateException,
+            FileHeader.ContentSyntaxErrorException {
+            super.update(progress);
+            if (progress != null) {
+                progress.done();
+            }
+    }
 
     public Iterable<FileHeader> getFileHeaders() {
         return this.headerFactory.getFileHeaders();

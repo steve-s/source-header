@@ -11,8 +11,27 @@ Core:
 		- lepsi kopirovani souboru
 	
 Gui:
-	- horni panel
-		- novy header
-		- update headeru
-		- update headeru do oznacenych souboru
+	- rozdeleni split pane
+		- vlevo jenom strom souboru
+		- vpravo text aread a tool box
+			- v tool boxu
+				- group box "Action on selected files"
+				- pøípadnì další buttony
+	- další vìci pøes klasické menu, pøíp. pravý klik na root stromu
 	- napoveda o programu
+	
+	- oznaèování položek v JTree, pøedávání pøes IView
+	- akce tlaèítek
+		- update header
+		- insert header
+		- append
+		- prepend	
+		
+	-------------------------------
+	Novy stav:
+	- nastaveni
+		- special character
+		- alternating blocks
+	- napoveda
+		- o programu
+		- lesi text v new headeru
