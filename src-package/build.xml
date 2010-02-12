@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="SourceHeader" default="compile" basedir=".">
+
+    <target name="clean">
+        <delete dir="build"/>
+    </target>
+
+    <target name="compile" depends="clean">
+        <mkdir dir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes"/>
+    </target>
+
+    <target name="jar">
+        <mkdir dir="build/jar"/>
+        <jar destfile="build/jar/sourceheader.jar" basedir="build/classes">
+            <manifest>
+                <attribute name="Main-Class" value="sourceheader.gui.Application"/>
+            </manifest>
+        </jar>
+    </target>
+	
+	<target name="javadoc">
+		<mkdir dir="build/javadoc"/>
+		<javadoc packagenames="sourceheader.*"
+           sourcepath="src"
+           destdir="build/javadoc/api"
+           author="true"
+           use="true"
+           windowtitle="SourceHeader API Documentation">
+				<doctitle><![CDATA[<h1>SourceHeader</h1>]]></doctitle>
+				<bottom><![CDATA[<i>Copyright &#169; 2010 Steve Sindelar</i>]]></bottom>
+				<link href="http://developer.java.sun.com/developer/products/xml/docs/api/"/>
+		</javadoc>
+	</target>
+
+    <target name="run" depends="jar">
+        <java jar="build/jar/soureheader.jar" fork="true"/>
+    </target>
+
+</project>
