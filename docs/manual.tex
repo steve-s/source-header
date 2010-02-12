@@ -1,0 +1,140 @@
+\documentclass[a4paper,twoside]{article}
+\usepackage[czech]{babel}
+\usepackage[cp1250]{inputenc}
+\usepackage{a4wide}
+
+\usepackage{graphicx}
+\usepackage{listings}
+
+\author{Štìpán~Šindeláø}
+\title{Uživatelská dokumentace programu SourceHeader}
+\begin{document}
+
+\maketitle
+
+\section*{Úvod}
+
+\paragraph*{}
+Program SourceHeader slouží ke snadnìjší správì záhlaví zdrojových souborù.
+SourceHeader umí rozpoznat shodnost existující záhlaví ve zdrojových souborech a uživateli
+nabízí možnot taková záhlaví hromadnì editovat, pøípadnì úplnì nahradit jiným. 
+Samozøejmostí je i vložení nového záhlaví do souborù, které zatím žádné neobsahují.
+
+\subparagraph*{Kdy jsou dvì záhlaví shodná?}
+Ve chvíli, kdy jsou záhlaví jednotlivých souborù shodná znak po znaku, je situace jasná,
+ale SourceHeader nabízí víc. Za prvé umí rozpoznat jméno souboru v textu záhlaví a dále
+rozlišuje takzvané alternující bloky. 
+
+\subparagraph*{Alternující bloky.}
+Alternující blok se skládá z poèáteèní sekvence a koncové sekvence. Pøíkladem mùže být javaDoc tag @category,
+jeho poèáteèní sekvencí je '@category' a koncovou sekvencí by mohl být nový øádek nebo mezera. 
+Jednotlivé alternující bloky lze nastavit v textovém konfiguraèním souboru.
+SourceHeader vnímá obsah mezi poèáteèní a koncovou sekvencí nìjakého alternujícího bloku jako
+unikátní pro každý soubor a pokud je záhlaví souborù shodné až na obsah takového bloku, 
+program se soubory pracuje jakoby mìly stejné záhlaví.
+
+\section*{Grafické rozhraní}
+
+\begin{figure}
+  \includegraphics[scale=0.6]{screenshot.jpg}
+  \caption{Screenshot uživatelského rozhraní.}
+  \label{screen1}
+\end{figure}
+
+\paragraph*{}
+Na snímku obrazovky (obrázek \ref{screen1}) grafického rozhraní vidíme v levém panelu strom se soubory vybrané složky, 
+v pravém panelu pak editor hlavièek a lištu s tlaèítky.
+
+\subsection*{Ovládání programu}
+
+\paragraph*{}
+Uživatel by mìl nejprve pomocí tlaèítka \uv{open folder} otevøít složku se zdrojovými soubory.
+Program takovou složku projde a vyextrahuje z ní záhlaví jednotlivých souborù. 
+Strom podsložek a souborù se zobrazí v levém panelu. 
+Když uživatel klikne na jméno nìjakého souboru, jeho záhlaví se objeví v záložce \uv{Current header}.
+Soubory se stejným záhlavím jsou oznaèeny stejnobarevnou ikonou.
+
+\subparagraph*{Dva zpùsoby výbìru souborù.}
+Soubory zobrazené ve stromu souborù lze vybrat dvìma zpùsoby. 
+První možnost je kliknutí na jméno souboru, potom text jménem souboru zmìní barvu a 
+hlavièka oznaèeného souboru se zobrazí v záložce \uv{Current header}, nic jiného toho oznaèení neznamená.
+
+Druhý zpùsob oznaèení je zaškrtnutí checkboxu, tímto zpùsobem lze vybrat najednou i více souborù, 
+má vliv na hromadné zpracování nìkterých pøíkazù a v nápisu \uv{Action on selected files} je mínìno právì toho oznaèení.
+Pokud nebude øeèeno jinak, bude v dalším textu slovo \uv{oznaèení} znamenat hromadné oznaèení souborù pomocí checkboxù.
+
+\paragraph*{Záložka \uv{New header}.}
+V této záložce mùže uživatel vytvoøit nové záhlaví a potom jej pomocí pøíkazu
+\uv{Isert header} mùže nastavit jako nové záhlaví vybraných souborù, 
+pøièemž stávající záhlaví, které program ze souborù vyextrahoval, bude smazáno.
+Pøíkazy \uv{Append header}, resp. \uv{Prepend header}, umožòují pøipojit text nového záhlaví za, 
+resp. pøed, stávající záhlaví a to opìt pro všechny oznaèené soubory.
+Pøi tvorbì nového záhlaví lze použít pouze speciální promìnnou '\%filename\%', která oznaèuje jméno souboru.
+Speciální znak '\%' lze v nastavení nahradit jiným.
+
+\paragraph*{Záložka \uv{Current header}.}
+V této záložce je zobrazen obsah záhlaví souboru oznaèeného kliknutím na jeho jméno.
+
+\subparagraph*{}
+Pøíkazy \uv{Isert header}, \uv{Append header} a \uv{Prepend header} mají pro tuto záložku stejný význam.
+Obsah vybraného záhlaví je vnímán pouze jako zdroj textu, ale tyto pøíkazy nijak nepracují s tím,
+že tento text je ve skuteènosti obsahem existujícího záhlaví.
+
+\subparagraph*{}
+Mocnìjším nástrojem je pøíkaz \uv{Update changes}, který je dostupný pouze pro záložku \uv{Current header}.
+Uživatel mùže zmìnit obsah vybraného záhlaví, potom jej pomocí toho pøíkazu uložit a
+program zmìní obsah záhlaví u všech souborù, které jej obsahovaly.
+To, že tato zmìna probíhá na záhlavích, která bych extrahována z existujících souborù, znamená, 
+že jsou dostupné obsahy alternativních blokù, které se v daném záhlaví vyskytovaly.
+
+\begin{figure}
+  \begin{tabular}{ l | l }
+	\begin{lstlisting}[language=JAVA]
+	/*
+	 * SourceHeader project. 
+	 *
+	 * @category%category%0%
+	 * file: %filename%
+	 */
+	\end{lstlisting}
+  &
+	\begin{lstlisting}[language=JAVA]
+	/*
+	 * SourceHeader project.
+	 *
+	 * @category Core
+	 * file: FileHeader.java
+	 */
+	\end{lstlisting}
+  \\
+  \end{tabular}
+  \caption{Jak záhlaví zobrazí program SourceHeader a jak vypadá skuteèné záhlaví.}
+  \label{code1}
+\end{figure}
+
+\subparagraph*{}
+Na obsah nìjakého alternujícího bloku se uživatel v textu záhlaví mùže odvolat pomocí 
+sekvence '\%jmeno-bloku\%cislo\%', kde \uv{jmeno-bloku} je oznaèení alternující èásti, 
+napø. \uv{javaDoc-cat} pro '@category', toto oznaèení má pouze informativní charakter. 
+Protože mùže záhlaví obsahovat vícekrát stejný alternativní blok 
+(tyto výskyty ale mohou mít rùzný obsah) jsou jednotlivé výskyty rozlišovány podle poøadového èísla.
+Na výpisu \ref{code1} je uvedena ukázka jak program zobrazí takové záhlaví a jak mùže vypadat ve skuteènosti.
+
+\subparagraph*{}
+Pøi spuštìní pøíkazu \uv{Update changes} už program znovu neprohledává hlavièky na alternující bloky,
+proto je doporuèeno po rozsáhlejší práci s alternujícími bloky 
+danou složku znovu naèíst pomocí \uv{open folder}.
+
+
+
+
+\end{document} 
+
+
+
+
+
+
+
+
+
