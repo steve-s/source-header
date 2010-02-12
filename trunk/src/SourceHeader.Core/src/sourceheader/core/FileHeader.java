@@ -18,22 +18,31 @@ import sourceheader.core.util.MD5;
 
 /**
  * Represents file header instance.
- * 
- * File headers should be created via class @link FileHeaderFactory.
- * 
- * File header consists of content (String), where all alternating parts
- * (e.g. content of tags &gt;description&lt;, filename, ...) are replaced with special sequences.
- * Two file headers are equal when contents are equal. 
  *
+ * <p>
+ * File headers should be created via class 
+ * {@link FileHeaderFactory FileHeaderFactory}.
+ * </p>
+ *
+ * <p>
+ * File header consists of content (String), where all alternating parts
+ * (e.g. content of javaDoc tag (a)category, filename, ...) are replaced with special sequences.
+ * Two file headers are equal when contents are equal.
+ * </p>
+ *
+ * <p>
  * When one wants to get content of header he must provide real values
  * of alternating parts.
+ * </p>
  *
- * Example of content of header with alternating part filename: 
- * <code>
+ * <p>
+ * Example of content of header with alternating part filename:
+ * <pre><code>
  *      /////
  *      /// File $filename$. Part of GNU class path.
  *      /////
- * </code>
+ * </code></pre>
+ * </p>
  * 
  * @author steve
  */

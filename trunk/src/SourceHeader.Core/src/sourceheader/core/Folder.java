@@ -17,7 +17,7 @@ import sourceheader.core.File.BackupCannotBeCareatedException;
 import sourceheader.core.File.FileCannotBeUpdateException;
 
 /**
- * Represents folder, it's subfolders and files.
+ * Represents folder, it's subfolders and {@link File files}.
  *
  * @author steve
  */

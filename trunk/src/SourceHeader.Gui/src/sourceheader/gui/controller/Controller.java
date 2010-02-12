@@ -13,11 +13,12 @@
 
 package sourceheader.gui.controller;
 
+import javax.swing.text.View;
 import sourceheader.core.FileHeader;
 
 /**
  * Controller handles input from user.
- * These method should be invoked by View.
+ * These method should be invoked by {@link View View}.
  *
  * @author steve
  */

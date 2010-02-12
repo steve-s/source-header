@@ -14,6 +14,8 @@
 package sourceheader.gui.util.preferences;
 
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.prefs.*;
 import javax.swing.JFrame;
 import sourceheader.core.parsers.Block;
@@ -47,11 +49,11 @@ public class ApplicationPreferences {
     }
 
     public int getWindowWidth() {
-        return this.prefs.getInt("window_width", 720);
+        return this.prefs.getInt("window_width", 882);
     }
 
     public int getWindowHeight() {
-        return this.prefs.getInt("window_height", 465);
+        return this.prefs.getInt("window_height", 485);
     }
 
     public int getSplitPaneDividerPosition() {

@@ -73,7 +73,7 @@ public class File {
     }
 
     /**
-     * @return File extemsion.
+     * @return File extension.
      */
     public String getExtension() {
         return this.path.getExtension();

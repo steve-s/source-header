@@ -18,7 +18,7 @@ import java.util.*;
 import sourceheader.core.*;
 
 /**
- * Provides basic infrastructure for header parsers implementation 
+ * Provides basic infrastructure for header parsers, implementation
  * of Template method pattern.
  *
  * Concrete parser must provide only list of comment blocks - start and end

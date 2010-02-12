@@ -18,9 +18,9 @@ import sourceheader.core.File.BackupCannotBeCareatedException;
 import sourceheader.core.File.FileCannotBeUpdateException;
 
 /**
- * Root of files and their headers.
+ * Root of {@link File files} and their {@link FileHeader headers}.
  * 
- * Instance should be created by factory method of FilesTreeFactory.
+ * Instance should be created by factory method of {@link FilesTreeFactory FilesTreeFactory}.
  * It will create whole graph of instances representing the tree.
  *
  * @author steve
