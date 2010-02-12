@@ -22,6 +22,12 @@ import sourceheader.gui.Application;
 /**
  * Helper class for saving and retrieving application cofiguration.
  *
+ * It uses java.util.prefs for basic preferences and configuration
+ * file (optional) for alternating parts configuration.
+ * Path to this configuration file is stored again using java.util.prefs.
+ *
+ * All preferences are provided with meaningful default values.
+ *
  * @author steve
  */
 public class ApplicationPreferences {
@@ -74,7 +80,7 @@ public class ApplicationPreferences {
 
     public Map<String, Block> getAlternatingParts() {
         if (this.getAlternatingPartsConfigFile().isEmpty()) {
-            return new HashMap<String, Block>();
+            return AlternatingPartsHelper.getDefaultAlternatingParts();
         }
 
         FilePersister persister = new FilePersister(this.getAlternatingPartsConfigFile());
@@ -86,6 +92,10 @@ public class ApplicationPreferences {
         }
     }
 
+    /**
+     * Updates alle window related pref with values from given window.
+     * @param frame
+     */
     public void updateWindowPreferences(JFrame frame) {
         this.prefs.putInt("window_x", frame.getX());
         this.prefs.putInt("window_y", frame.getY());

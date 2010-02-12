@@ -13,6 +13,7 @@
 
 package sourceheader.core;
 
+import java.util.Collection;
 import sourceheader.core.File.BackupCannotBeCareatedException;
 import sourceheader.core.File.FileCannotBeUpdateException;
 
@@ -58,7 +59,7 @@ public class FilesTree extends Folder {
     /**
      * @return All headers that 'live' within this container.
      */
-    public Iterable<FileHeader> getFileHeaders() {
+    public Collection<FileHeader> getFileHeaders() {
         return this.headerFactory.getFileHeaders();
     }    
 }

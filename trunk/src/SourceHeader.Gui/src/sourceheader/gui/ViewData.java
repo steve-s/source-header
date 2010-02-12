@@ -17,6 +17,7 @@ import sourceheader.core.*;
 
 /**
  * Encapsulates data shared between controller and view.
+ * Changes can be observed by class implements ViewDataObserver.
  *
  * @author steve
  */

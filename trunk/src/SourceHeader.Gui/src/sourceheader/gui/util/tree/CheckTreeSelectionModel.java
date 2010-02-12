@@ -16,7 +16,10 @@ package sourceheader.gui.util.tree;
 import javax.swing.tree.*;
 import java.util.*;
 
-// @author Santhosh Kumar T - santhosh@in.fiorano.com
+/**
+ * This class has been taken from blog of Santhos Kumar.
+ * @author Santhosh Kumar T - santhosh@in.fiorano.com
+ */
 public class CheckTreeSelectionModel extends DefaultTreeSelectionModel{
     private TreeModel model;
 
@@ -61,6 +64,7 @@ public class CheckTreeSelectionModel extends DefaultTreeSelectionModel{
         return true;
     }
 
+    @Override
     public void setSelectionPaths(TreePath[] pPaths){
         throw new UnsupportedOperationException("not implemented yet!!!");
     }

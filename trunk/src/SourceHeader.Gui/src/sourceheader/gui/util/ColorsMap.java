@@ -28,6 +28,8 @@ import sourceheader.core.FileHeader;
  * It handles distribution to new headers and provides information
  * about color and also about color's icon.
  *
+ * This class is singleton.
+ *
  * @author steve
  */
 public class ColorsMap {
@@ -68,27 +70,19 @@ public class ColorsMap {
         return this.getInfoFor(header).color;
     }
 
+    /**
+     * @param header
+     * @return Returns icon (correclty colored) that is assigned to given header.
+     */
     public Icon getIconForHeader(FileHeader header) {
         return this.getInfoFor(header).icon;
     }
 
-    public void recycle(FileHeader[] aviableHeaders) {
-        for (FileHeader fileHeader : this.headersMap.keySet()) {
-            boolean found = false;
-            for (FileHeader aviable : aviableHeaders) {
-                if (aviable.equals(fileHeader)) {
-                    found = true;
-                    break;
-                }
-            }
-
-            if (!found) {
-                this.colorsList.add(this.headersMap.get(fileHeader));
-                this.headersMap.remove(fileHeader);
-            }
-        }
-    }
-
+    /**
+     * Internal helper method.
+     * @param header
+     * @return The color info class instance.
+     */
     private HeaderInfo getInfoFor(FileHeader header) {
         HeaderInfo info = this.headersMap.get(header);
         if (info == null) {
@@ -104,6 +98,11 @@ public class ColorsMap {
         return info;
     }
 
+    /**
+     * Helper method creates icon of specific color.
+     * @param color
+     * @return The Icon instance.
+     */
     private Icon createIcon(Color color) {
         BufferedImage image = new BufferedImage(ICON_SIZE, ICON_SIZE, Transparency.BITMASK);
         Graphics2D graphics = image.createGraphics();
@@ -112,6 +111,11 @@ public class ColorsMap {
         return new ImageIcon(image);
     }
 
+    /**
+     * Helper method creates universal 'multicolor' icon.
+     * @param color
+     * @return The Icon instance.
+     */
     private static Icon createUniversalIcon() {
         BufferedImage image = new BufferedImage(ICON_SIZE, ICON_SIZE, Transparency.BITMASK);
         Graphics2D graphics = image.createGraphics();
@@ -124,6 +128,9 @@ public class ColorsMap {
         return new ImageIcon(image);
     }
 
+    /**
+     * Iternal class holds iformation about coloring of header.
+     */
     private class HeaderInfo {
         public HeaderInfo(Color color) {
             this.color = color;

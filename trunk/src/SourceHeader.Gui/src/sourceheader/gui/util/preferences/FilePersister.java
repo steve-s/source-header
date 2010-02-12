@@ -18,6 +18,7 @@ import java.util.*;
 import sourceheader.core.parsers.Block;
 
 /**
+ * Basic implementation of PreferencesPresister that uses file as storage.
  *
  * @author steve
  */
@@ -32,6 +33,9 @@ public class FilePersister implements PreferencesPersister {
         this.file = new File(path);
     }
 
+    /**
+     * @inheritDoc
+     */
     public Map<String, Block> getAlternatingParts() throws Exception {
         BufferedReader reader = new BufferedReader(
                 new InputStreamReader(new FileInputStream(this.file)));
@@ -62,9 +66,24 @@ public class FilePersister implements PreferencesPersister {
         return result;
     }
 
+    /**
+     * @inheritDoc
+     */
     public void saveAlternatingParts(Map<String, Block> parts) throws Exception {
         PrintWriter writer = new PrintWriter(this.file);
+        this.saveAlternatingParts(writer, parts);
+        writer.flush();
+        writer.close();
+    }
 
+    /**
+     * This method is used by AlternatingPartsHelper that needs to
+     * insert also comments into config file.
+     * @param writer Output writer.
+     * @param parts
+     * @throws Exception
+     */
+    protected void saveAlternatingParts(PrintWriter writer, Map<String, Block> parts) throws Exception {
         for (String key : parts.keySet()) {
             writer.println(key);
             Block block = parts.get(key);
@@ -74,11 +93,11 @@ public class FilePersister implements PreferencesPersister {
                     AlternatingPartsHelper.encode(block.getEndSequence()));
             writer.println();
         }
-
-        writer.flush();
-        writer.close();
     }
 
+    /**
+     * Specific exception of this storage.
+     */
     public static class SyntaxException extends Exception {
         public SyntaxException() {
             super("There is syntax error in config file.");

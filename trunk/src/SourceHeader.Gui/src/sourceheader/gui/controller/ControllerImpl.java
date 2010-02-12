@@ -26,14 +26,21 @@ import sourceheader.gui.*;
 import sourceheader.gui.util.preferences.ApplicationPreferences;
 
 /**
+ * Controller handles input from user.
  *
  * @author steve
  */
 public class ControllerImpl implements Controller {
 
+    /**
+     * Program is intended to be distributed as one single file so
+     * any external resources was not used.
+     */
     private final String newHeaderContent =
             "/** \n" +
             " * Welcome to SourceHeader!\n" +
+            " * \n" +
+            " * Before you do anything with you $1.000.000$ sorce code, CREATE BACKUP!!!\n" +
             " * \n" +
             " * This is content of a new header. You can change this text and than \n" +
             " * upload it as a new header of selected files or you can prepend or append it to \n" +
@@ -64,6 +71,12 @@ public class ControllerImpl implements Controller {
     private Thread workingThread = null;
     private final ApplicationPreferences preferences;
 
+    /**
+     * Initializes controller and viewData.
+     * @param viewData View data that is shared between this controller and given view.
+     * @param view View that sends user input to this controller.
+     * @param preferences User preferences.
+     */
     public ControllerImpl(ViewData viewData, IView view, ApplicationPreferences preferences) {
         this.viewData = viewData;
         this.view = view;
@@ -85,14 +98,23 @@ public class ControllerImpl implements Controller {
         this.preferences = preferences;
     }
 
+    /**
+     * @inheritDoc
+     */
     public boolean isWorking() {
         return this.isWorking;
     }
 
+    /**
+     * @inheritDoc
+     */
     public void currentHeaderSelectChanged(FileHeader header) {
         this.viewData.setCurrentHeader(header);
     }
 
+    /**
+     * @inheritDoc
+     */
     public void chooseRootButtonClicked() {
         if (this.isWorking) {
             this.view.warningDialog("Please wait until update is done.", "Updating...");
@@ -100,29 +122,7 @@ public class ControllerImpl implements Controller {
         }
 
         final Path path = this.view.getPathFromUser();
-        if (path != null) {
-            long filesCount =
-                    Filesystem.getFilesCount(path, 400, new FileFilter() {
-                            public boolean accept(java.io.File pathname) {
-                                return !pathname.isHidden() &&
-                                    !pathname.getName().startsWith(".");
-                            }
-                        });
-
-            if (filesCount >= 100) {
-                String warning = "Directory contains " + filesCount +
-                        " files. Processing it may take some time. Are you sure?";
-                if (filesCount == 400) {
-                    warning = "Directory contains more that 400 files. " +
-                        "Processing it may take some time. Are you sure?";
-                }
-                boolean result =
-                    this.view.questionDialog(warning, "Lot of files.");
-                if (!result) {
-                    return;
-                }
-            }
-
+        if (path != null && this.checkPath(path)) {
             this.isWorking = true;
             this.view.setStatusText("Parsing headers....");
             this.workingThread = new BackgroundThread(new Runnable() {
@@ -148,6 +148,9 @@ public class ControllerImpl implements Controller {
         }
     }
 
+    /**
+     * @inheritDoc
+     */
     public void updateHeaderButtonClicked() {
         if (checkFilesTree()) {
             return;
@@ -157,6 +160,9 @@ public class ControllerImpl implements Controller {
         this.runTreeUpdate();
     }
 
+    /**
+     * @inheritDoc
+     */
     public void uploadHeaderButtonClicked() {
         if (checkFilesTree()) {
             return;
@@ -171,6 +177,9 @@ public class ControllerImpl implements Controller {
         this.runTreeUpdate();
     }
 
+    /**
+     * @inheritDoc
+     */
     public void appendHeaderButtonClicked() {
         if (checkFilesTree()) {
             return;
@@ -179,6 +188,9 @@ public class ControllerImpl implements Controller {
         this.insertToHeaders(true);
     }
 
+    /**
+     * @inheritDoc
+     */
     public void prependHeaderButtonClicked() {
         if (checkFilesTree()) {
             return;
@@ -187,12 +199,20 @@ public class ControllerImpl implements Controller {
         this.insertToHeaders(false);
     }
 
+    /**
+     * @inheritDoc
+     */
     public void stopWorking() {
         if (this.isWorking) {
             this.workingThread.suspend();
         }
     }
 
+    /**
+     * Checks wheter an action on files tree may be performed.
+     * It means that any files tree is loaded and controller is not working on background.
+     * @return True if action may be performed.
+     */
     private boolean checkFilesTree() {
         if (this.viewData.getFilesTree() == null) {
             this.view.warningDialog("Please first open some folder.", "No files");
@@ -207,6 +227,10 @@ public class ControllerImpl implements Controller {
         return false;
     }
 
+    /**
+     * Inserts text from current tab to headers of selected files.
+     * @param append Should it be appended (True) or prepended (False).
+     */
     private void insertToHeaders(boolean append) {
         String toBeInserted;
         if (this.viewData.isNewHeaderVisible()) {
@@ -234,6 +258,41 @@ public class ControllerImpl implements Controller {
         this.runTreeUpdate();
     }
 
+    /**
+     * Checks whether the path does not contain too many files if so,
+     * requests user permission for opening such path.
+     * @param path
+     * @return True if parsing of the path is OK.
+     */
+    private boolean checkPath(Path path) {
+        long filesCount =
+                Filesystem.getFilesCount(path, 400, new FileFilter() {
+                        public boolean accept(java.io.File pathname) {
+                            return !pathname.isHidden() &&
+                                !pathname.getName().startsWith(".");
+                        }
+                    });
+
+        if (filesCount >= 100) {
+            String warning = "Directory contains " + filesCount +
+                    " files. Processing it may take some time. Are you sure?";
+            if (filesCount == 400) {
+                warning = "Directory contains more that 400 files. " +
+                    "Processing it may take some time. Are you sure?";
+            }
+            boolean result =
+                this.view.questionDialog(warning, "Lot of files.");
+            if (!result) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Runs viewData.filesTree.update on background.
+     */
     private void runTreeUpdate() {
         this.view.setStatusText("Updating...");
         this.workingThread = new BackgroundThread(new Runnable() {
@@ -259,6 +318,9 @@ public class ControllerImpl implements Controller {
         this.workingThread.start();
     }
 
+    /**
+     * Parent of all threads used in controller.
+     */
     private static class BackgroundThread extends Thread {
         public BackgroundThread(Runnable target) {
             super(target);

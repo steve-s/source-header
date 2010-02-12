@@ -23,6 +23,7 @@ import javax.swing.*;
 import sourceheader.gui.util.preferences.*;
 
 /**
+ * Preferences dialog lets user change some basic preferences.
  *
  * @author steve
  */

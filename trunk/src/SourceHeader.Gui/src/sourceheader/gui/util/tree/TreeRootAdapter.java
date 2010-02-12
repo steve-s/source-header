@@ -17,6 +17,7 @@ import javax.swing.tree.*;
 import sourceheader.core.*;
 
 /**
+ * Adapter for tree root that is FilesTree instance.
  *
  * @author steve
  */
