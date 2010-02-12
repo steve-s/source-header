@@ -1,0 +1,1 @@
+"C:\Program Files\Programovani\NetBeans 6.7.1\java2\ant\bin\ant.bat" %1%
