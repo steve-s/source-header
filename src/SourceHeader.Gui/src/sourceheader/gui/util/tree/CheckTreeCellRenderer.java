@@ -18,6 +18,10 @@ import java.awt.Component;
 import javax.swing.*;
 import javax.swing.tree.*;
 
+/**
+ * This class has been taken from blog of Santhos Kumar.
+ * @author Santhosh Kumar T - santhosh@in.fiorano.com
+ */
 public class CheckTreeCellRenderer extends JPanel implements TreeCellRenderer{
     private CheckTreeSelectionModel selectionModel;
     private TreeCellRenderer delegate;

@@ -14,9 +14,11 @@
 package sourceheader.gui.util.preferences;
 
 import java.io.*;
-import java.util.regex.Matcher;
+import java.util.*;
+import sourceheader.core.parsers.Block;
 
 /**
+ * Helper methods for alternating parts configuration.
  *
  * @author steve
  */
@@ -58,29 +60,29 @@ public class AlternatingPartsHelper {
         writer.println();
         writer.println();
 
-        writer.println("description-tag");
-        writer.println("<description>");
-        writer.println("</description>");
-
-        writer.println();
-
-        writer.println("package");
-        writer.println("@package");
-        writer.println("\\n");
-
-        writer.println();
-
-        writer.println("category");
-        writer.println("@category");
-        writer.println("\\n");
-
-        writer.println();
-
-        writer.println("subcategory");
-        writer.println("@subcategory");
-        writer.println("\\n");
+        try {
+            new FilePersister("").saveAlternatingParts(writer, getDefaultAlternatingParts());
+        } catch(Exception ex) {
+            throw new IOException(ex);
+        }
 
         writer.flush();
         writer.close();
+    }
+
+    /**
+     * @return The map of default alternating parts.
+     */
+    public static Map<String, Block> getDefaultAlternatingParts() {
+        Map<String, Block> result = new HashMap<String, Block>();
+
+        result.put("description-tag", new Block("<description>", "</description>"));
+        result.put("package", new Block("@package", "\n"));
+        result.put("category", new Block("@category", "\n"));
+        result.put("subcategory", new Block("@subcategory", "\n"));
+        result.put("group", new Block("@group", "\n"));
+        result.put("subgroup", new Block("@subgroup", "\n"));
+
+        return result;
     }
 }

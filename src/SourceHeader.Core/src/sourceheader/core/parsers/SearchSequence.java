@@ -12,11 +12,9 @@ class SearchSequence {
     private Object data;
     private String sequence;
     private StringBuilder current;
-    AbstractParser outer;
 
-    public SearchSequence(Object data, String sequence, AbstractParser outer) {
+    public SearchSequence(Object data, String sequence) {
         super();
-        this.outer = outer;
         this.data = data;
         this.sequence = sequence;
         this.current = new StringBuilder();

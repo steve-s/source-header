@@ -56,8 +56,8 @@ public class FileHeaderFactory {
     /**
      * @return List of all headers that have been created trought this factory.
      */
-    public Iterable<FileHeader> getFileHeaders() {
-        return (Iterable<FileHeader>)this.headers.values();
+    public Collection<FileHeader> getFileHeaders() {
+        return this.headers.values();
     }
 
     /**

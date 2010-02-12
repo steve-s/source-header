@@ -16,7 +16,8 @@ package sourceheader.gui.util.tree;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 /**
- *
+ * Initial model from files tree that shows some help information.
+ * 
  * @author steve
  */
 public class EmptyTreeRootAdapter extends DefaultMutableTreeNode {

@@ -15,12 +15,15 @@ package sourceheader.gui.util.tree;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseEvent;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.*;
 import javax.swing.*;
 
+/**
+ * This class has been taken from blog of Santhos Kumar.
+ * @author Santhosh Kumar T - santhosh@in.fiorano.com
+ */
 public class CheckTreeManager extends MouseAdapter implements TreeSelectionListener{
     private CheckTreeSelectionModel selectionModel;
     private JTree tree = new JTree();

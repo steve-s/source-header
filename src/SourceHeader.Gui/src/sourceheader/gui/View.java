@@ -26,8 +26,10 @@ import javax.swing.tree.*;
 import sourceheader.core.*;
 import sourceheader.gui.controller.*;
 import sourceheader.gui.dialogs.*;
+import sourceheader.gui.util.ColorsMap;
 
 /**
+ * Main window class.
  *
  * @author steve
  */
@@ -46,25 +48,13 @@ public class View extends JFrame
     private CheckTreeManager checkTreeManager;
     private final ViewData viewData;
 
+    /**
+     * Initializes gui, sets itself visible.
+     */
     public View() {
         super("Source header v0.1");
         this.setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        this.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                if (View.this.controller.isWorking()) {
-                    int result = JOptionPane.showConfirmDialog(
-                                        View.this,
-                                        "There is operation that is not complete. Are you sure to close application?",
-                                        "Operation is not complete.",
-                                        JOptionPane.YES_NO_CANCEL_OPTION);
-                    if (result != JOptionPane.YES_OPTION) {
-                        return;
-                    }
-                }
-                dispose();
-            }        
-        });
+        this.addWindowListener(new ClosingWindowAdapter());
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception ex) {}
@@ -85,6 +75,9 @@ public class View extends JFrame
         this.setVisible(true);
     }
 
+    /**
+     * Initializes central split pane that divides files tree and rest of gui.
+     */
     private void initCentralSplitPane() {
         JSplitPane centralSplitPane = this.splitPane;
         centralSplitPane.setDividerSize(10);        
@@ -94,6 +87,10 @@ public class View extends JFrame
         centralSplitPane.setDividerLocation(this.preferences.getSplitPaneDividerPosition());
     }
 
+    /**
+     * Initializes left panel that consists only of JTree.
+     * @return The panel instance.
+     */
     private JPanel initLeftPanel() {
         JPanel leftPanel = new JPanel(new BorderLayout(5, 3));
 
@@ -111,6 +108,11 @@ public class View extends JFrame
         return leftPanel;
     }
 
+    /**
+     * Initializes right panel of split pane.
+     * This panel consists of top right, right content and right bottom panels.
+     * @return The panel instance.
+     */
     private JPanel initRightPanel() {
         JPanel rightPanel = new JPanel(new BorderLayout(2, 3));
         rightPanel.add(this.initTopRightPanel(), BorderLayout.NORTH);
@@ -119,6 +121,10 @@ public class View extends JFrame
         return rightPanel;
     }
 
+    /**
+     * Initializes top right panel. This panel is 'toolbox' with buttons.
+     * @return The panel instance.
+     */
     private JPanel initTopRightPanel() {
         JButton updateButton = new JButton("Insert header");
         updateButton.addActionListener(new UpdateHeaderListener());
@@ -163,6 +169,12 @@ public class View extends JFrame
         return panel;
     }
 
+    /**
+     * Initializes right content panel.
+     * This panel is JTabbedPane with new header text area and current
+     * header text area.
+     * @return The panel instance.
+     */
     private JComponent initRightContentPanel() {
         String text = this.viewData.getNewHeader().getContent();
         this.newHeaderTextArea.setText(text);
@@ -191,6 +203,10 @@ public class View extends JFrame
         return pane;
     }
 
+    /**
+     * Initializes right bottom panel that is something like status bar.
+     * @return The panel instance.
+     */
     private JComponent initRightBottomPanel() {
         JPanel flow = new JPanel(new FlowLayout(FlowLayout.LEFT));
         flow.add(this.progressBar);
@@ -203,6 +219,9 @@ public class View extends JFrame
         return panel;
     }
 
+    /**
+     * Initializes the window menu and it's actions.
+     */
     private void initMenu() {
         JMenuItem open = new JMenuItem("Open folder");
         open.addActionListener(new OpenFolderListener());
@@ -231,23 +250,7 @@ public class View extends JFrame
             }
         });
         JMenuItem help = new JMenuItem("Help");
-        help.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if (!Desktop.isDesktopSupported() ||
-                    !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                    View.this.warningDialog(
-                            "Your desktor does not support browse url. " +
-                            "Manual can be found at http://code.google.com/p/source-header/wiki/Manual.",
-                            "Browse not supported");
-                }
-                else {
-                    try {
-                            Desktop.getDesktop().browse(new URI("http://code.google.com/p/source-header/wiki/Manual"));
-                    } catch (IOException ex) {}
-                    catch (URISyntaxException ex) {}
-                }
-            }
-        });
+        help.addActionListener(new HelpActionListener());
 
         JMenu helpMenu = new JMenu("Help");
         helpMenu.add(about);
@@ -262,6 +265,9 @@ public class View extends JFrame
     // ------------------------------------------------------------ //
     // ----------------- IView implementation --------------------- //
 
+    /**
+     * @iheritDoc
+     */
     public Path getPathFromUser() {
         JFileChooser dialog = new JFileChooser();
         dialog.setMultiSelectionEnabled(false);
@@ -273,6 +279,9 @@ public class View extends JFrame
         return null;
     }
 
+    /**
+     * @iheritDoc
+     */
     public void warningDialog(final String content, final String title) {
         this.runSafely(new Runnable() {
             public void run() {
@@ -282,6 +291,9 @@ public class View extends JFrame
         });
     }
 
+    /**
+     * @iheritDoc
+     */
     public boolean questionDialog(String content, String title) {
         int result = JOptionPane.showConfirmDialog(
                             this, content, title,
@@ -289,6 +301,9 @@ public class View extends JFrame
         return result == JOptionPane.YES_OPTION;
     }
 
+    /**
+     * @iheritDoc
+     */
     public void setStatusText(final String text) {
         this.runSafely(new Runnable() {
             public void run() {
@@ -297,6 +312,9 @@ public class View extends JFrame
         });
     }
 
+    /**
+     * @iheritDoc
+     */
     public void updateTree() {
         this.runSafely(new Runnable() {
             public void run() {
@@ -305,6 +323,9 @@ public class View extends JFrame
         });
     }
 
+    /**
+     * @iheritDoc
+     */
     public ProgressReportConsumer getProgressReportConsumer() {
         return new ProgressReportConsumer() {
             public void progress() {
@@ -329,14 +350,23 @@ public class View extends JFrame
         };
     }
 
+    /**
+     * @iheritDoc
+     */
     public String getCurrentHeaderContent() {
         return this.currentHeaderTextArea.getText();
     }
 
+    /**
+     * @iheritDoc
+     */
     public String getNewHeaderContent() {
         return this.newHeaderTextArea.getText();
     }
 
+    /**
+     * @iheritDoc
+     */
     public java.util.List<File> getSelectedFiles() {
         TreePath[] paths = this.checkTreeManager.getSelectionModel().getSelectionPaths();
         java.util.List<File> result = new java.util.ArrayList<File>();
@@ -355,6 +385,10 @@ public class View extends JFrame
     // ------------------------------------------------------------ //
     // ----------------- Observation of ViewData ------------------ //
 
+    /**
+     * When the current header is changed,
+     * the content of current header text area should be changed to it's new value.
+     */
     public void currentHeaderChanged() {
         this.runSafely(new Runnable() {
             public void run() {
@@ -364,6 +398,9 @@ public class View extends JFrame
         });
     }
 
+    /**
+     * When files tree instance is changed, than JTree model should be updated.
+     */
     public void filesTreeChanged() {
         this.runSafely(new Runnable() {
             public void run() {
@@ -376,6 +413,10 @@ public class View extends JFrame
         });
     }
 
+    /**
+     * When the new header is changed,
+     * the content of new header text area should be changed to it's new value.
+     */
     public void newHeaderChanged() {
         this.runSafely(new Runnable() {
             public void run() {
@@ -385,6 +426,10 @@ public class View extends JFrame
         });
     }
 
+    /**
+     * Helper method checks wheter invokeLater is required and runs given work.
+     * @param work
+     */
     private void runSafely(Runnable work) {
         if (SwingUtilities.isEventDispatchThread()) {
             work.run();
@@ -397,6 +442,9 @@ public class View extends JFrame
     // ------------------------------------------------------------ //
     // ------------------------ Listeners ------------------------- //
 
+    /**
+     * Listens to simple tree selection and delegates action to controller.
+     */
     private class FilesTreeSelectionListener implements TreeSelectionListener {
         public void valueChanged(TreeSelectionEvent e) {
             Object obj = e.getPath().getLastPathComponent();
@@ -409,35 +457,86 @@ public class View extends JFrame
         }
     }
 
+    /**
+     * Listener delegates action to controller.
+     */
     private class OpenFolderListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             View.this.controller.chooseRootButtonClicked();
         }
     }
-
+    
+    /**
+     * Listener delegates action to controller.
+     */
     private class UpdateHeaderListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             View.this.controller.uploadHeaderButtonClicked();
         }
     }
 
+    /**
+     * Listener delegates action to controller.
+     */
     private class AppendHeaderListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             View.this.controller.appendHeaderButtonClicked();
         }
     }
 
+    /**
+     * Listener delegates action to controller.
+     */
     private class PrependHeaderListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             View.this.controller.prependHeaderButtonClicked();
         }
     }
 
+    /**
+     * When disposing, preferences should be saved.
+     */
     @Override
     public void dispose() {
         this.preferences.updateWindowPreferences(this);
         this.preferences.setSplitPaneDividerPosition(this.splitPane.getDividerLocation());
         this.controller.stopWorking();
         super.dispose();
+    }
+
+    /**
+     * If user tries to close window when some work is not done,
+     * he should be warned.
+     */
+    private class ClosingWindowAdapter extends WindowAdapter {
+        @Override
+        public void windowClosing(WindowEvent e) {
+            if (View.this.controller.isWorking()) {
+                int result = JOptionPane.showConfirmDialog(View.this, "There is operation that is not complete. Are you sure to close application?", "Operation is not complete.", JOptionPane.YES_NO_CANCEL_OPTION);
+                if (result != JOptionPane.YES_OPTION) {
+                    return;
+                }
+            }
+            dispose();
+        }
+    }
+
+    /**
+     * Help action ones browser with manual.
+     */
+    private class HelpActionListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            if (!Desktop.isDesktopSupported() || !Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                View.this.warningDialog("Your desktor does not support browse url. " + 
+                        "Manual can be found at http://code.google.com/p/source-header/wiki/Manual.",
+                        "Browse not supported");
+            } else {
+                try {
+                    Desktop.getDesktop().browse(
+                            new URI("http://code.google.com/p/source-header/wiki/Manual"));
+                } catch (IOException ex) {}
+                catch (URISyntaxException ex) {}
+            }
+        }
     }
 }

@@ -13,20 +13,15 @@
 
 package sourceheader.gui.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.Desktop;
-import java.awt.FlowLayout;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import javax.swing.*;
 
 /**
+ * Dialog shows basic information about application.
  *
  * @author steve
  */

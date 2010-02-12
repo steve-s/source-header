@@ -15,14 +15,13 @@ package sourceheader.gui.util.tree;
 
 import sourceheader.gui.util.*;
 import java.awt.*;
-import java.awt.image.*;
-import java.util.*;
 import javax.swing.*;
 import javax.swing.tree.*;
 import sourceheader.core.File;
-import sourceheader.core.FileHeader;
 
 /**
+ * CellRenderer for nodes with userObject of type File.
+ * It renders node with icon of file's header color taken from ColorMap.
  *
  * @author steve
  */
@@ -50,6 +49,10 @@ public class FilesTreeCellRenderer implements TreeCellRenderer {
             boolean hasFocus) {
 
         JLabel label = new JLabel(value.toString());
+
+        if (selected) {
+            label.setForeground(SystemColor.textHighlight);
+        }
 
         Icon leafIcon = this.getOpenIcon();
         if (value instanceof DefaultMutableTreeNode &&
