@@ -19,10 +19,10 @@ import sourceheader.core.HeaderParser.SyntaxErrorException;
 import sourceheader.core.parsers.*;
 
 /**
- * FileHeader instances should be created via this factory.
+ * {@link FileHeader FileHeader} instances should be created via this factory.
  * 
  * This factory caches instances of same header and chooses
- * correct HeaderParser according to file extension.
+ * correct {@link HeaderParser HeaderParser} implementation according to file extension.
  *
  * @author steve
  */
@@ -65,7 +65,7 @@ public class FileHeaderFactory {
      * should be already replaced with special sequences.
      *
      * @param content Content of file header.
-     * @return FileHeader instance that corresponds to given content.
+     * @return {@link FileHeader FileHeader} instance that corresponds to given content.
      */
     public FileHeader create(String content) {
         FileHeader result = new FileHeader(content, 
@@ -91,13 +91,13 @@ public class FileHeaderFactory {
 
     /**
      * Extracts header from given file and creates
-     * @link sourceheader.core#FileHeader FileHeader class instance for it
+     * {@link FileHeader FileHeader} class instance for it
      * and also creates map of real values for alternating parts.
      *
      * Ensures that for equal headers the same instances will be returned.
      *
      * @param path Path on filesystem to file.
-     * @return Messenger class with FileHeader instance
+     * @return Messenger class with {@link FileHeader FileHeader} instance
      * and map of real values of alternating parts.
      */
     public HeaderParser.HeaderAndAlternatingParts create(Path path)
@@ -120,7 +120,7 @@ public class FileHeaderFactory {
     /**
      * Internal helper method.
      * @param path
-     * @return Parser for file on given path.
+     * @return {@link HeaderParser Parser} for file on given path.
      */
     private HeaderParser findParserFor(Path path) {
         for (HeaderParser parser : this.parsers) {

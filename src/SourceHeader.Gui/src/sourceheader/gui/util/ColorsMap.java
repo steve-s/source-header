@@ -23,7 +23,6 @@ import sourceheader.core.FileHeader;
 
 /**
  * Represents map of colors to headers.
- * This is singleton class.
  *
  * It handles distribution to new headers and provides information
  * about color and also about color's icon.

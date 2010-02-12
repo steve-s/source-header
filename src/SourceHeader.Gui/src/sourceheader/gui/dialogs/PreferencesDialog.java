@@ -150,6 +150,13 @@ public class PreferencesDialog extends JDialog {
                 return;
             }
 
+            if (JOptionPane.showConfirmDialog(
+                    PreferencesDialog.this,
+                    "This will rewrite all content of this file.",
+                    "Are you sure?", JOptionPane.OK_CANCEL_OPTION) != JOptionPane.OK_OPTION) {
+                return;
+            }
+
             try {
                 AlternatingPartsHelper.saveDefaultConfigTo(
                         alternatingPartsConfigFileTextField.getText());

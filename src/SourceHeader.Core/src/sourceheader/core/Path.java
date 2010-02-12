@@ -19,7 +19,7 @@ import java.util.*;
  * Represents path on filesystem.
  *
  * Wrapper for java.io.File class adds some useful methods
- * and it's name does not collide with class @link sourceheader.core.File.
+ * and it's name does not collide with class {@link sourceheader.core.File sourceheader.core.File}.
  *
  * @author steve
  */

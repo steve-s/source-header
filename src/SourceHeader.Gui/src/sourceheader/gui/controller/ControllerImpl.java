@@ -64,7 +64,7 @@ public class ControllerImpl implements Controller {
             " **/ ";
 
     private final ViewData viewData;
-    private final IView view;
+    private final View view;
     private final FileHeaderFactory headerFactory;
     private final FilesTreeFactory treeFactory;
     private volatile boolean isWorking = false;
@@ -73,11 +73,11 @@ public class ControllerImpl implements Controller {
 
     /**
      * Initializes controller and viewData.
-     * @param viewData View data that is shared between this controller and given view.
+     * @param viewData View data that is shared between this controller and given {@link View view}.
      * @param view View that sends user input to this controller.
      * @param preferences User preferences.
      */
-    public ControllerImpl(ViewData viewData, IView view, ApplicationPreferences preferences) {
+    public ControllerImpl(ViewData viewData, View view, ApplicationPreferences preferences) {
         this.viewData = viewData;
         this.view = view;
 

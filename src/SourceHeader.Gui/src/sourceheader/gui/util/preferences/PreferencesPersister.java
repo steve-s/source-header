@@ -17,7 +17,7 @@ import java.util.Map;
 import sourceheader.core.parsers.Block;
 
 /**
- * Interface for class that persist configuration of alternating parts.
+ * Interface for class that persists configuration of alternating parts.
  * This configuration is slightly complex so custom storage system
  * was used instead for java.util.pref.
  *

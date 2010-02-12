@@ -19,9 +19,9 @@ import java.util.*;
 import sourceheader.core.HeaderParser.SyntaxErrorException;
 
 /**
- * Creates instances of FilesTree.
+ * Creates instances of {@link FilesTree FilesTree}.
  * 
- * User provide path on filesystem and FilesTreeFactory 
+ * User provide path on filesystem and {@link FilesTreeFactory FilesTreeFactory}
  * will create whole graph of instances representing the tree.
  *
  * @author steve
@@ -52,7 +52,7 @@ public class FilesTreeFactory {
     }
 
     /**
-     * Creates FilesTree from given path on filesystem.
+     * Creates {@link FilesTree FilesTree} from given path on filesystem.
      * @param path
      * @param progress Progress listener.
      * @return New instance of FilesTree
@@ -105,7 +105,7 @@ public class FilesTreeFactory {
     }
 
     /**
-     * Creates Folder class instance from given path.
+     * Creates {@link Folder Folder} class instance from given path.
      * @param path Path on filesystem.
      * @param progress Progress listener.
      * @return Folder instance.
@@ -119,7 +119,7 @@ public class FilesTreeFactory {
     }
 
     /**
-     * Creates File class instance from given path.
+     * Creates {@link File File} class instance from given path.
      * @param path File's path on filesystem.
      * @return File instance.
      * @throws IOException

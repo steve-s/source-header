@@ -14,10 +14,12 @@
 package sourceheader.gui;
 
 import sourceheader.core.*;
+import sourceheader.gui.controller.Controller;
 
 /**
- * Encapsulates data shared between controller and view.
- * Changes can be observed by class implements ViewDataObserver.
+ * Encapsulates data shared between {@link Controller controller} and
+ * {@lin View view}.
+ * Changes can be observed by class implements {@link ViewDataObserver ViewDataObserver}.
  *
  * @author steve
  */
@@ -74,6 +76,9 @@ public class ViewData {
         }
     }
 
+    /**
+     * Interface for class that wants to observer changes of {@link ViewData ViewData}.
+     */
     public interface ViewDataObserver {
         void currentHeaderChanged();
         void newHeaderChanged();

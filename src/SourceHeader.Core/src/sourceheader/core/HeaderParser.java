@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Interface for parser that extracts header from source file.
+ * Interface for parser that extracts {@link FileHeader header} from source file.
  *
  * @author steve
  */
