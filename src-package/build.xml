@@ -7,7 +7,10 @@
 
     <target name="compile" depends="clean">
         <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes"/>
+        <javac 
+			srcdir="src" 
+			destdir="build/classes"
+			source="1.6"/>
     </target>
 
     <target name="jar">
@@ -34,7 +37,7 @@
 	</target>
 
     <target name="run" depends="jar">
-        <java jar="build/jar/soureheader.jar" fork="true"/>
+        <java jar="build/jar/sourceheader.jar" fork="true"/>
     </target>
 
 </project>

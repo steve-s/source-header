@@ -17,8 +17,8 @@
 \paragraph*{}
 Program SourceHeader slouží ke snadnìjší správì záhlaví zdrojových souborù.
 SourceHeader umí rozpoznat shodnost existující záhlaví ve zdrojových souborech a uživateli
-nabízí možnot taková záhlaví hromadnì editovat, pøípadnì úplnì nahradit jiným. 
-Samozøejmostí je i vložení nového záhlaví do souborù, které zatím žádné neobsahují.
+nabízí možnost taková záhlaví hromadnì editovat, pøípadnì úplnì nahradit jiným záhlavím. 
+Samozøejmostí je i možnost vložení nového záhlaví do souborù, které zatím žádné neobsahují.
 
 \subparagraph*{Kdy jsou dvì záhlaví shodná?}
 Ve chvíli, kdy jsou záhlaví jednotlivých souborù shodná znak po znaku, je situace jasná,
@@ -30,12 +30,12 @@ Alternující blok se skládá z poèáteèní sekvence a koncové sekvence. Pøíkladem mù
 jeho poèáteèní sekvencí je '@category' a koncovou sekvencí by mohl být nový øádek nebo mezera. 
 Jednotlivé alternující bloky lze nastavit v textovém konfiguraèním souboru.
 SourceHeader vnímá obsah mezi poèáteèní a koncovou sekvencí nìjakého alternujícího bloku jako
-unikátní pro každý soubor a pokud je záhlaví souborù shodné až na obsah takového bloku, 
-program se soubory pracuje jakoby mìly stejné záhlaví.
+unikátní pro každý soubor, a pokud je záhlaví souborù shodné až na obsah takového bloku, 
+program se soubory pracuje, jakoby mìly stejné záhlaví.
 
 \section*{Grafické rozhraní}
 
-\begin{figure}
+\begin{figure}[h]
   \includegraphics[scale=0.6]{screenshot.jpg}
   \caption{Screenshot uživatelského rozhraní.}
   \label{screen1}
@@ -54,18 +54,17 @@ Strom podsložek a souborù se zobrazí v levém panelu.
 Když uživatel klikne na jméno nìjakého souboru, jeho záhlaví se objeví v záložce \uv{Current header}.
 Soubory se stejným záhlavím jsou oznaèeny stejnobarevnou ikonou.
 
-\subparagraph*{Dva zpùsoby výbìru souborù.}
+\paragraph*{Dva zpùsoby výbìru souborù.}
 Soubory zobrazené ve stromu souborù lze vybrat dvìma zpùsoby. 
-První možnost je kliknutí na jméno souboru, potom text jménem souboru zmìní barvu a 
+První možnost je kliknutí na jméno souboru, potom text se jménem souboru zmìní barvu a 
 hlavièka oznaèeného souboru se zobrazí v záložce \uv{Current header}, nic jiného toho oznaèení neznamená.
-
 Druhý zpùsob oznaèení je zaškrtnutí checkboxu, tímto zpùsobem lze vybrat najednou i více souborù, 
 má vliv na hromadné zpracování nìkterých pøíkazù a v nápisu \uv{Action on selected files} je mínìno právì toho oznaèení.
 Pokud nebude øeèeno jinak, bude v dalším textu slovo \uv{oznaèení} znamenat hromadné oznaèení souborù pomocí checkboxù.
 
 \paragraph*{Záložka \uv{New header}.}
 V této záložce mùže uživatel vytvoøit nové záhlaví a potom jej pomocí pøíkazu
-\uv{Isert header} mùže nastavit jako nové záhlaví vybraných souborù, 
+\uv{Isert header} nastavit jako nové záhlaví vybraných souborù, 
 pøièemž stávající záhlaví, které program ze souborù vyextrahoval, bude smazáno.
 Pøíkazy \uv{Append header}, resp. \uv{Prepend header}, umožòují pøipojit text nového záhlaví za, 
 resp. pøed, stávající záhlaví a to opìt pro všechny oznaèené soubory.
@@ -87,7 +86,7 @@ program zmìní obsah záhlaví u všech souborù, které jej obsahovaly.
 To, že tato zmìna probíhá na záhlavích, která bych extrahována z existujících souborù, znamená, 
 že jsou dostupné obsahy alternativních blokù, které se v daném záhlaví vyskytovaly.
 
-\begin{figure}
+\begin{table}[h]
   \begin{tabular}{ l | l }
 	\begin{lstlisting}[language=JAVA]
 	/*
@@ -108,9 +107,8 @@ To, že tato zmìna probíhá na záhlavích, která bych extrahována z existujících so
 	\end{lstlisting}
   \\
   \end{tabular}
-  \caption{Jak záhlaví zobrazí program SourceHeader a jak vypadá skuteèné záhlaví.}
-  \label{code1}
-\end{figure}
+  \caption{Jak záhlaví zobrazí program SourceHeader a jak vypadá ve skuteènosti. \label{code1}}  
+\end{table}
 
 \subparagraph*{}
 Na obsah nìjakého alternujícího bloku se uživatel v textu záhlaví mùže odvolat pomocí 
@@ -118,7 +116,7 @@ sekvence '\%jmeno-bloku\%cislo\%', kde \uv{jmeno-bloku} je oznaèení alternující 
 napø. \uv{javaDoc-cat} pro '@category', toto oznaèení má pouze informativní charakter. 
 Protože mùže záhlaví obsahovat vícekrát stejný alternativní blok 
 (tyto výskyty ale mohou mít rùzný obsah) jsou jednotlivé výskyty rozlišovány podle poøadového èísla.
-Na výpisu \ref{code1} je uvedena ukázka jak program zobrazí takové záhlaví a jak mùže vypadat ve skuteènosti.
+V tabulce èíslo \ref{code1} je uvedena ukázka jak program zobrazí takové záhlaví a jak mùže vypadat ve skuteènosti.
 
 \subparagraph*{}
 Pøi spuštìní pøíkazu \uv{Update changes} už program znovu neprohledává hlavièky na alternující bloky,
@@ -126,6 +124,27 @@ proto je doporuèeno po rozsáhlejší práci s alternujícími bloky
 danou složku znovu naèíst pomocí \uv{open folder}.
 
 
+\subsection*{Nastavení}
+
+\begin{figure}[h]
+  \includegraphics[scale=0.6]{screenshot2.jpg}
+  \caption{Screenshot dialogu s nastavením.}
+  \label{screen2}
+\end{figure}
+
+\paragraph*{}
+Program umožòuje základní nastavení v grafickém rozhraní. 
+Dialog s nastavením (obrázek \ref{screen2}) se zobrazí po pøíkazu z menu \uv{File}$\rightarrow$\uv{Preferences}.
+Uživatel má možnost zmìnit speciální znak, který je defaultnì nastaven na '\%',
+a cestu k souboru s konfigurací alternujících blokù. 
+Zmìny konfigurace se projeví až po restartu programu.
+
+\subparagraph*{}
+Konfiguraci jednotlivých alternujících blokù lze upravovat pouze ruènì. 
+Po stisknutí tlaèítka \uv{Insert default config} vygeneruje program do 
+zadaného souboru defaultní nastavení spoleènì s nápovìdou k jeho syntaxi.
+Pokud soubor s konfigurací alternujících èástí není uveden, program vnitønì 
+naète defaultní nastavení alternujících blokù.
 
 
 \end{document} 
