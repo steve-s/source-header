@@ -257,6 +257,7 @@ public abstract class AbstractParser implements HeaderParser {
 
     /**
      * Reads input until some start of comment block.
+     * Expects first character (param c) to be already not white.
      * @param reader
      * @param previousInput
      * @return The comment block and last character encapsulated in one class.
@@ -270,9 +271,15 @@ public abstract class AbstractParser implements HeaderParser {
             List<SearchSequence> starts = this.getAllStartSequences();
             Block found = null;
             while (starts.size() > 0 && found == null && reader.ready()) {
-                Vector<SearchSequence> toBeRemoved = new Vector<SearchSequence>();
+                // Search for some start of comment block,
+                // if the input sequence is not prefix of any
+                // comment block, than this is not comment and
+                // should not considered as part of header.
+                ArrayList<SearchSequence> toBeRemoved =
+                        new ArrayList<SearchSequence>();
                 for(SearchSequence s : starts) {
-                    if (s.next(c)) {
+                    boolean b = s.next(c);
+                    if (b) {
                         found = (Block)s.getData();
                         break;
                     }

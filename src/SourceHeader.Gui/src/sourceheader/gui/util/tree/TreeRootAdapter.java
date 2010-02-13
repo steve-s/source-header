@@ -13,6 +13,7 @@
 
 package sourceheader.gui.util.tree;
 
+import java.util.List;
 import javax.swing.tree.*;
 import sourceheader.core.*;
 
@@ -36,7 +37,8 @@ public class TreeRootAdapter extends DefaultMutableTreeNode {
     }
 
     private void update(Folder folder, DefaultMutableTreeNode node) {
-        for (Folder childFolder : folder.getFolders()) {
+        List<Folder> folders = folder.getFolders();
+        for (Folder childFolder : folders) {
             DefaultMutableTreeNode childNode =
                     new DefaultMutableTreeNode(childFolder);
             this.update(childFolder, childNode);

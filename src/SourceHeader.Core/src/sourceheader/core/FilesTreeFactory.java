@@ -136,8 +136,8 @@ public class FilesTreeFactory {
      * Encapsulates return value for method extractFolder.
      */
     private class FoldersAndFiles {
-        List<Folder> folders = new Vector<Folder>();
-        List<File> files = new Vector<File>();
+        List<Folder> folders = new ArrayList<Folder>();
+        List<File> files = new ArrayList<File>();
     }
 
     /**
