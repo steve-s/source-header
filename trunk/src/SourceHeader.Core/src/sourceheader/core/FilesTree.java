@@ -13,7 +13,7 @@
 
 package sourceheader.core;
 
-import java.util.Collection;
+import java.util.*;
 import sourceheader.core.File.BackupCannotBeCareatedException;
 import sourceheader.core.File.FileCannotBeUpdateException;
 
@@ -26,16 +26,12 @@ import sourceheader.core.File.FileCannotBeUpdateException;
  * @author steve
  */
 public class FilesTree extends Folder {
-
-    private Iterable<Folder> folders;
     private FileHeaderFactory headerFactory;
-    private Path path;
 
-    protected FilesTree(Path path, Iterable<File> files,
-            Iterable<Folder> subfolders,  FileHeaderFactory headerFactory) {
+    protected FilesTree(Path path, List<File> files,
+            List<Folder> subfolders,  FileHeaderFactory headerFactory) {
         super(path, files, subfolders);
         this.headerFactory = headerFactory;
-        this.path = path;
     }
 
     /**

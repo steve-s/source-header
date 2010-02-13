@@ -15,6 +15,7 @@ package sourceheader.core;
 
 import sourceheader.core.File.BackupCannotBeCareatedException;
 import sourceheader.core.File.FileCannotBeUpdateException;
+import java.util.*;
 
 /**
  * Represents folder, it's subfolders and {@link File files}.
@@ -23,12 +24,12 @@ import sourceheader.core.File.FileCannotBeUpdateException;
  */
 public class Folder {
 
-    private Iterable<File> files;
-    private Iterable<Folder> folders;
+    private List<File> files;
+    private List<Folder> folders;
     private Path path;
 
-    protected Folder(Path path, Iterable<File> files,
-            Iterable<Folder> subfolders) {
+    protected Folder(Path path, List<File> files,
+            List<Folder> subfolders) {
         this.folders = subfolders;
         this.files = files;
         this.path = path;
@@ -42,7 +43,7 @@ public class Folder {
         return this.path.getName();
     }
 
-    public Iterable<Folder> getFolders() {
+    public List<Folder> getFolders() {
         return this.folders;
     }
 
@@ -84,7 +85,7 @@ public class Folder {
     /**
      * @return the list of files.
      */
-    public Iterable<File> getFiles() {
+    public List<File> getFiles() {
         return files;
     }
 

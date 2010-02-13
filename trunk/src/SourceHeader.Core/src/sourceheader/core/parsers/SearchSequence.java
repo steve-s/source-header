@@ -3,21 +3,34 @@ package sourceheader.core.parsers;
 /**
  * This class consumes characters from input and indicates whether
  * the searcher character sequence occurred.
+ *
+ * Implemented using Knuth–Morris–Pratt algorithm.
  */
-class SearchSequence {
+public class SearchSequence {
 
     /**
      * Additional information about sequence for consumer.
      */
     private Object data;
     private String sequence;
-    private StringBuilder current;
+    private int currentIndex = -1;
+    private int[] backEdges;
 
     public SearchSequence(Object data, String sequence) {
         super();
         this.data = data;
         this.sequence = sequence;
-        this.current = new StringBuilder();
+        this.backEdges = new int[sequence.length()];
+
+        // create automat
+        if (this.sequence.length() > 0) {
+            this.backEdges[0] = -1;
+            for (int i = 1; i < sequence.length(); i++) {
+                this.nextState(this.sequence.charAt(i));
+                this.backEdges[i] = this.currentIndex;
+            }
+            this.reset();
+        }
     }
 
     /**
@@ -36,16 +49,11 @@ class SearchSequence {
         return this.data;
     }
 
-    private char nextCharacter() {
-        int index = this.current.length();
-        return this.sequence.charAt(index);
-    }
-
     /**
      * Resets search.
      */
     public void reset() {
-        this.current.setLength(0);
+        this.currentIndex = -1;
     }
 
     /**
@@ -53,14 +61,29 @@ class SearchSequence {
      * That means if there was it's occurrence in past and reset was not called.
      */
     public boolean found() {
-        return this.current.length() == this.sequence.length();
+        boolean result = this.currentIndex == this.sequence.length()-1;
+        return result;
     }
 
     /**
      * @return The length of current prefix of search sequence that has been found.
      */
     public int currentLenght() {
-        return this.current.length();
+        return this.currentIndex+1;
+    }
+
+    /**
+     * Moves to next state in automat.
+     * @param c
+     */
+    private void nextState(char c) {
+        while(this.currentIndex != -1 &&
+                this.sequence.charAt(this.currentIndex+1) != c) {
+            this.currentIndex = this.backEdges[this.currentIndex];
+        }
+        if (c == this.sequence.charAt(this.currentIndex+1)) {
+            this.currentIndex++;
+        }
     }
 
     /**
@@ -72,16 +95,8 @@ class SearchSequence {
         if (this.found()) {
             return true;
         }
-        if (c == this.nextCharacter()) {
-            this.current.append(c);
-            return this.found();
-        }
-        this.current.setLength(0);
-        // 'c' might be first character of sequence
-        if (c == this.nextCharacter()) {
-            this.current.append(c);
-            return this.found();
-        }
-        return false;
+
+        this.nextState(c);
+        return this.found();
     }
 }

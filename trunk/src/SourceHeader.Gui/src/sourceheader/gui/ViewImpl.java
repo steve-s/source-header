@@ -20,6 +20,9 @@ import sourceheader.gui.util.tree.*;
 import sourceheader.gui.util.preferences.ApplicationPreferences;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Stack;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
@@ -368,14 +371,24 @@ public class ViewImpl extends JFrame
      */
     public java.util.List<File> getSelectedFiles() {
         TreePath[] paths = this.checkTreeManager.getSelectionModel().getSelectionPaths();
+        Stack stack = new Stack();
+        stack.addAll(Arrays.asList(paths));
         java.util.List<File> result = new java.util.ArrayList<File>();
 
-        for (TreePath path : paths) {
-            Object obj = path.getLastPathComponent();
-            if (obj instanceof DefaultMutableTreeNode) {
-                if (((DefaultMutableTreeNode)obj).getUserObject() instanceof File) {
-                    result.add((File)((DefaultMutableTreeNode)obj).getUserObject());
-                }
+        while (!stack.isEmpty()) {
+            Object current = stack.pop();
+            if (current instanceof TreePath) {
+                stack.push(((TreePath)current).getLastPathComponent());
+            }
+            else if (current instanceof DefaultMutableTreeNode) {
+                stack.push(((DefaultMutableTreeNode)current).getUserObject());
+            }
+            else if (current instanceof File) {
+                result.add((File)current);
+            }
+            else if (current instanceof Folder) {
+                stack.addAll(((Folder)current).getFolders());
+                stack.addAll(((Folder)current).getFiles());
             }
         }
         return result;
