@@ -31,7 +31,7 @@ public class AboutDialog extends JDialog {
             "<html><h1>Source header</h1><br/> " +
             "<p>Makes source files headers maintaining easier!</p>" +
             "<p>version: 1.0 beta</p>" +
-            "<p>author: Steve Sindelar</p>" +
+            "<p>author: Steve Sindelar (http://stevesindelar.cz)</p>" +
             "<p>licence: New BSD licence</p></html>";
 
     private final String linkContent =
