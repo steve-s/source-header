@@ -215,6 +215,7 @@ public abstract class AbstractParser implements HeaderParser {
         AlternatingPartsHandler alternatingParts =
                 new AlternatingPartsHandler(alternatingPartsContent, this.config);
         SearchSequence filenameSequence = new SearchSequence(null, filename);
+        SearchSequence classnameSequence = new SearchSequence(null, this.getClassName(filename));
 
         char c = previousInput;
         SearchSequence search = new SearchSequence(null, comment.getEndSequence());
@@ -223,11 +224,27 @@ public abstract class AbstractParser implements HeaderParser {
                 // handle special case of 'filename' alternating part
                 if (!filename.isEmpty() && filenameSequence.next(c)) {
                     filenameSequence.reset();
+                    // remove %classname% that was inserted because
+                    // classname is substring of filename and suffix,
+                    // that is not part of %classname% and was appended.
                     commentContent.delete(
-                            commentContent.length()-filename.length()+1,
+                            commentContent.length() - "%classname%".length()
+                                - (filename.length() - classnameSequence.getSequence().length() - 1), // the suffix length
                             commentContent.length());
+                    // and insert %filename%
                     commentContent.append( this.config.getSpecialCharacter() +
                             "filename" + this.config.getSpecialCharacter());
+                }
+                //handle special case of 'classname'
+                else if (!filename.isEmpty() && classnameSequence.next(c)) {
+                    classnameSequence.reset();
+                    //remove the real content...
+                    commentContent.delete(
+                            commentContent.length() - classnameSequence.getSequence().length()+1,
+                            commentContent.length());
+                    // ...and replace with %classname%.
+                    commentContent.append( this.config.getSpecialCharacter() +
+                            "classname" + this.config.getSpecialCharacter());
                 }
                 else {
                     // otherwise we are not in any alternating part,
@@ -296,6 +313,13 @@ public abstract class AbstractParser implements HeaderParser {
             result.block = found;
             result.c = c;
             return result;
+    }
+
+    private String getClassName(String filename) {
+        if (filename.isEmpty()) {
+            return filename;
+        }
+        return filename.substring(0, filename.lastIndexOf('.'));
     }
 
     /**

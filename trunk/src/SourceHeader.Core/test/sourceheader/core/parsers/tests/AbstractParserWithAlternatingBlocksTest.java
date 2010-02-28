@@ -70,6 +70,41 @@ public class AbstractParserWithAlternatingBlocksTest {
     }
 
     @Test
+    public void test_parse_with_classname_in_content() throws IOException, SyntaxErrorException {
+        Map<String, Block> parts = new HashMap<String, Block>();
+        ParsersConfig config = new ParsersConfig('%', parts);
+
+        AbstractParser parser =
+            new AbstractParser(config) {
+                @Override
+                protected Iterable<Block> getCommentBlocks() {
+                    return (Iterable<Block>)
+                            Arrays.asList(new Block[]{ new Block("/*","*/")});
+                }
+
+                @Override
+                public String[] getExtensions() {
+                    throw new UnsupportedOperationException("Not supported yet.");
+                }
+        };
+
+        FileHeaderFactory factory =
+                new FileHeaderFactory(Utils.getParsersConfig(),
+                    new HeaderParser[] {});
+
+        Reader reader =
+                new StringReader("/* \n Hello filename world!\n" +
+                                "filename */ \n");
+
+        HeaderParser.HeaderAndAlternatingParts result =
+                parser.parse(reader, factory, "filename.java");
+
+        assertEquals("/* \n Hello %classname% world!\n" +
+                "%classname% */",
+                result.header.getContent());
+    }
+
+    @Test
     public void test_parse_with_alternating_block_in_comment()
             throws IOException, SyntaxErrorException {
 

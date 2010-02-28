@@ -68,7 +68,7 @@ V této záložce mùže uživatel vytvoøit nové záhlaví a potom jej pomocí pøíkazu
 pøièemž stávající záhlaví, které program ze souborù vyextrahoval, bude smazáno.
 Pøíkazy \uv{Append header}, resp. \uv{Prepend header}, umožòují pøipojit text nového záhlaví za, 
 resp. pøed, stávající záhlaví a to opìt pro všechny oznaèené soubory.
-Pøi tvorbì nového záhlaví lze použít pouze speciální promìnnou '\%filename\%', která oznaèuje jméno souboru.
+Pøi tvorbì nového záhlaví lze použít pouze speciální promìnnou \mbox{'\%filename\%'}, která oznaèuje jméno souboru.
 Speciální znak '\%' lze v nastavení nahradit jiným.
 
 \paragraph*{Záložka \uv{Current header}.}
@@ -81,9 +81,10 @@ Obsah vybraného záhlaví je vnímán pouze jako zdroj textu, ale tyto pøíkazy nijak
 
 \subparagraph*{}
 Mocnìjším nástrojem je pøíkaz \uv{Update changes}, který je dostupný pouze pro záložku \uv{Current header}.
-Uživatel mùže zmìnit obsah vybraného záhlaví, potom jej pomocí toho pøíkazu uložit a
-program zmìní obsah záhlaví u všech souborù, které jej obsahovaly.
-To, že tato zmìna probíhá na záhlavích, která bych extrahována z existujících souborù, znamená, 
+Uživatel mùže zmìnit obsah aktuálního záhlaví, potom jej pomocí toho pøíkazu uložit a
+program zmìní obsah záhlaví u všech souborù, které jej obsahovaly. 
+(Oznaèení souborù pomocí checkboxù tedy v tomto pøípadì nemá vliv a soubory, které budou zpracovány, jsou urèeny podle shodnosti záhlaví.)
+To, že tato zmìna probíhá na záhlavích, která byla extrahována z existujících souborù, znamená, 
 že jsou dostupné obsahy alternativních blokù, které se v daném záhlaví vyskytovaly.
 
 \begin{table}[h]
@@ -112,7 +113,7 @@ To, že tato zmìna probíhá na záhlavích, která bych extrahována z existujících so
 
 \subparagraph*{}
 Na obsah nìjakého alternujícího bloku se uživatel v textu záhlaví mùže odvolat pomocí 
-sekvence '\%jmeno-bloku\%cislo\%', kde \uv{jmeno-bloku} je oznaèení alternující èásti, 
+sekvence \mbox{'\%jmeno-bloku\%cislo\%'}, kde \uv{jmeno-bloku} je oznaèení alternující èásti, 
 napø. \uv{javaDoc-cat} pro '@category', toto oznaèení má pouze informativní charakter. 
 Protože mùže záhlaví obsahovat vícekrát stejný alternativní blok 
 (tyto výskyty ale mohou mít rùzný obsah) jsou jednotlivé výskyty rozlišovány podle poøadového èísla.
