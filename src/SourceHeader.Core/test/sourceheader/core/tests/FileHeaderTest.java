@@ -100,4 +100,26 @@ public class FileHeaderTest {
                 "/* constant \n * <description>%description%0%</description>*/",
                 header.getContent());
     }
+    
+    @Test
+    public void test_getRawContent_replaces_classname() throws ContentSyntaxErrorException {
+        final String headerStr = "/* constant \n" +
+                            " * %classname% */";
+        FileHeader header = new FileHeader(headerStr,'%') {};
+
+        assertEquals(
+                "/* constant \n * MyClass */",
+                header.getRawContent(new HashMap<String, List<String>>(), "MyClass.cs"));
+    }
+
+    @Test
+    public void test_getRawContent_replaces_filename() throws ContentSyntaxErrorException {
+        final String headerStr = "/* constant \n" +
+                            " * %filename% */";
+        FileHeader header = new FileHeader(headerStr,'%') {};
+
+        assertEquals(
+                "/* constant \n * MyClass.js */",
+                header.getRawContent(new HashMap<String, List<String>>(), "MyClass.js"));
+    }
 }

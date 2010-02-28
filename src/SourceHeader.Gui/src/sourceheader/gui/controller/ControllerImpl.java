@@ -46,19 +46,20 @@ public class ControllerImpl implements Controller {
             " * upload it as a new header of selected files or you can prepend or append it to \n" +
             " * all headers of selected files. \n" +
             " * \n" +
-            " * When creating header's content you may use variable %filename%.\n" +
+            " * When creating header's content you may use variable %filename% \n" +
+            " * and %classname% (filename without extension). \n" +
             " * There is also concept of alternating blocks:\n" +
             " * These are blocks of content that may vary in the same headers,\n" +
             " * for example javaDoc tag @category might be different, but if all\n" +
             " * other contents are the same, SourceHeader will identify such headers as same.\n" +
             " * Alternating blocks are replaced with %alt-block-name%{number}%.\n" +
             " * \n" +
-            " * Of course you cannot use an alternating block which content is not aviable.\n" +
+            " * Of course you cannot use an alternating block which content is not available.\n" +
             " * (in other words: it was not extracted from header of existing file).\n" +
             " * This especially means that you cannot use alternating blocks\n" +
             " * here in content of new header.\n" +
             " * \n" +
-            " * When you update files somehow in program their headers are not again\n" +
+            " * When you update files, their headers are not again\n" +
             " * parsed for alternating blocks. So it is recommended to open folder again\n" +
             " * after an extensive work with alternating blocks.\n" +
             " **/ ";

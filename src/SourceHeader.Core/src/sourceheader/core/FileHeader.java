@@ -107,6 +107,9 @@ public class FileHeader {
                 if (name.equals("filename")) {
                     result.append(filename);                    
                 }
+                else if (name.equals("classname")) {
+                    result.append(filename.substring(0, filename.lastIndexOf('.')));
+                }
                 else {
                     assert tokenizer.hasMoreTokens() : "There must be number after id";
                     int number = Integer.parseInt(tokenizer.nextToken());
