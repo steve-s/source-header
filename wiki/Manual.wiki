@@ -3,3 +3,4 @@
 = Manual =
 
 Manual is under construction. Sorry.
+Only pdf manual in czech is available [http://blog.stevesindelar.cz/data/sh-manual.pdf here].
